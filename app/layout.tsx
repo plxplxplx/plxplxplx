@@ -51,6 +51,7 @@ import Navbar from "./components/Navbar";
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
 
+
 // });
 
 // const geistMono = Geist_Mono({
