@@ -1,7 +1,7 @@
 // app/components/EventTable.tsx
 'use client'
 import React from 'react'
-import { EventWithImages } from '../../types/event'
+import { EventWithImages } from '../types/event'
 
 type Props = { events: EventWithImages[] }
 

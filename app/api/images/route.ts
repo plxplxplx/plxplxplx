@@ -2,11 +2,12 @@
 import { NextResponse, NextRequest } from 'next/server'
 import fs from 'fs'
 import path from 'path'
-import { google } from 'googleapis'
-import { buildImageUrl } from '../../lib/drive'  // adjust the path as needed
+import { google, drive_v3 } from 'googleapis'
+import { JWTInput } from 'google-auth-library'
+import { buildImageUrl } from '../../lib/drive'
 
 export async function GET(req: NextRequest) {
-  // 1) Extract folderId from query string
+  // 1. Extract folderId from query string
   const folderId = req.nextUrl.searchParams.get('folderId')
   if (!folderId) {
     return NextResponse.json(
@@ -15,35 +16,38 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  // 2) Load your service account key JSON
+  // 2. Load service account credentials
   const keyFile = process.env.GOOGLE_APPLICATION_CREDENTIALS
   if (!keyFile) {
     return NextResponse.json(
-      { error: 'Missing GOOGLE_APPLICATION_CREDENTIALS env var' },
+      { error: 'GOOGLE_APPLICATION_CREDENTIALS not set' },
       { status: 500 }
     )
   }
+
   const keyPath = path.isAbsolute(keyFile)
     ? keyFile
     : path.join(process.cwd(), keyFile)
-  let keyJson: any
+
+  let keyJson: JWTInput
   try {
-    keyJson = JSON.parse(fs.readFileSync(keyPath, 'utf8'))
-  } catch (err: any) {
+    keyJson = JSON.parse(fs.readFileSync(keyPath, 'utf8')) as JWTInput
+  } catch (error) {
+    const err = error as Error
     return NextResponse.json(
       { error: `Failed to read service account key: ${err.message}` },
       { status: 500 }
     )
   }
 
-  // 3) Authenticate with Google Drive
+  // 3. Authenticate
   const auth = new google.auth.GoogleAuth({
     credentials: keyJson,
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
   })
   const drive = google.drive({ version: 'v3', auth })
 
-  // 4) List up to 50 images in the folder
+  // 4. List image files
   try {
     const driveRes = await drive.files.list({
       q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
@@ -52,17 +56,19 @@ export async function GET(req: NextRequest) {
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
     })
-    const files = driveRes.data.files || []
 
-    // 5) Build the JSON response with view URLs
-    const images = files.map(f => ({
-      id: f.id!,
-      name: f.name!,
-      url: buildImageUrl(f.id!),
-    }))
+    const files = driveRes.data.files ?? []
+    const images = files
+      .filter((f): f is drive_v3.Schema$File & { id: string; name: string } => Boolean(f.id && f.name))
+      .map(f => ({
+        id: f.id,
+        name: f.name,
+        url: buildImageUrl(f.id),
+      }))
 
     return NextResponse.json({ images })
-  } catch (err: any) {
+  } catch (error) {
+    const err = error as Error
     return NextResponse.json(
       { error: `Drive API error: ${err.message}` },
       { status: 500 }

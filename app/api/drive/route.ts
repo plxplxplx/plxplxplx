@@ -1,42 +1,73 @@
-// app/api/drive-test/route.ts
-import { NextResponse } from 'next/server'
+// app/api/drive/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import fs from 'fs'
+import path from 'path'
 import { google } from 'googleapis'
+import { JWTInput } from 'google-auth-library'
 
-export async function GET() {
-  const folderId = process.env.DRIVE_FOLDER_ID
+export async function GET(req: NextRequest) {
+  // ─── 1. Read & validate the folderId query param ──────────────────────────────
+  const folderId = req.nextUrl.searchParams.get('folderId')
   if (!folderId) {
     return NextResponse.json(
-      { error: 'Missing DRIVE_FOLDER_ID' },
+      { error: 'Missing ?folderId=' },
+      { status: 400 }
+    )
+  }
+
+  // ─── 2. Load the service-account key JSON ─────────────────────────────────────
+  const keyFile = process.env.GOOGLE_APPLICATION_CREDENTIALS
+  if (!keyFile) {
+    return NextResponse.json(
+      { error: 'GOOGLE_APPLICATION_CREDENTIALS env var is not set' },
       { status: 500 }
     )
   }
 
-  try {
-    // Let GoogleAuth pick up your key via GOOGLE_APPLICATION_CREDENTIALS
-    const auth = new google.auth.GoogleAuth({
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    })
-    const drive = google.drive({ version: 'v3', auth })
+  const keyPath = path.isAbsolute(keyFile)
+    ? keyFile
+    : path.join(process.cwd(), keyFile)
 
-    // List image files in the shared folder
-    const res = await drive.files.list({
+  let keyJson: JWTInput
+  try {
+    keyJson = JSON.parse(fs.readFileSync(keyPath, 'utf8')) as JWTInput
+  } catch (err) {
+    const e = err as Error
+    return NextResponse.json(
+      { error: `Failed to read key JSON: ${e.message}` },
+      { status: 500 }
+    )
+  }
+
+  // ─── 3. Authenticate & create Drive client ───────────────────────────────────
+  const auth = new google.auth.GoogleAuth({
+    credentials: keyJson,
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+  })
+
+  const drive = google.drive({ version: 'v3', auth })
+
+  // ─── 4. Query the folder for image files ─────────────────────────────────────
+  try {
+    const resp = await drive.files.list({
       q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
-      fields: 'files(id,name)',
-      pageSize: 10,
+      fields: 'files(id,name,mimeType)',
+      pageSize: 100,
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
     })
 
-    // Build direct-view URLs for each image
-    const images = (res.data.files || []).map(f => ({
-      name: f.name,
-      url: `https://drive.google.com/uc?export=view&id=${f.id}`,
+    /** Each file is of type drive_v3.Schema$File */
+    const files = (resp.data.files ?? []).map((f): { id: string; name: string } => ({
+      id: f.id as string,
+      name: f.name ?? '',
     }))
 
-    return NextResponse.json({ images })
-  } catch (e: any) {
+    return NextResponse.json({ images: files })
+  } catch (err) {
+    const e = err as Error
     return NextResponse.json(
-      { error: `Drive API error: ${e.message}` },
+      { error: `Drive list error: ${e.message ?? 'unknown error'}` },
       { status: 500 }
     )
   }

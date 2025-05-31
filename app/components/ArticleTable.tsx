@@ -50,7 +50,6 @@ export default function ArticleTable({ articles }: Props) {
         <tbody>
           {articles.map((row, idx) => {
             const bg = bgCycle[idx % bgCycle.length]
-            const link = (row.Länk || '').trim()
 
             return (
               <React.Fragment key={idx}>
