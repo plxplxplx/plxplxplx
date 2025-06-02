@@ -1,12 +1,13 @@
 // File: app/lib/googleDriveClient.ts
 import { google, drive_v3 } from 'googleapis';
-import { JWTInput, GoogleAuth } from 'google-auth-library';
+import { JWTInput, GoogleAuth } from 'google-auth-library'; // JSONClient might not be needed for the fix but good to be aware of
 
-let authClientInstance: InstanceType<typeof GoogleAuth> | null = null;
+// Changed the type here from InstanceType<typeof GoogleAuth> to just GoogleAuth
+// GoogleAuth as a type defaults to GoogleAuth<JSONClient>
+let authClientInstance: GoogleAuth | null = null; 
 let driveServiceInstance: drive_v3.Drive | null = null;
 
 export async function getGoogleDriveService(): Promise<drive_v3.Drive> {
-  // If already initialized, return the cached instance
   if (driveServiceInstance && authClientInstance) {
     console.log('🔵 INFO [GoogleDriveClient]: Reusing cached Google Drive service.');
     return driveServiceInstance;
@@ -36,11 +37,15 @@ export async function getGoogleDriveService(): Promise<drive_v3.Drive> {
   }
 
   try {
+    // When new google.auth.GoogleAuth is called with service account credentials,
+    // it effectively creates a GoogleAuth<JSONClient> instance.
     authClientInstance = new google.auth.GoogleAuth({
       credentials: keyJson,
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
 
+    // Now authClientInstance is correctly typed as GoogleAuth<JSONClient> (by default)
+    // which is compatible with what google.drive() expects.
     driveServiceInstance = google.drive({ version: 'v3', auth: authClientInstance });
     console.log('🟢 SUCCESS [GoogleDriveClient]: Google Drive service initialized.');
     return driveServiceInstance;

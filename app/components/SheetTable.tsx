@@ -1,16 +1,14 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import { EventRow } from '../types/event' // Assuming EventWithImages is not used directly here
-                                         // and images are fetched on demand.
-                                         // If EventRow should be EventWithImages and pre-populated,
-                                         // this logic would change.
+// Removed useEffect from here as it was unused
+import React, { useState } from 'react' 
+import Image from 'next/image' // Import next/image
+import { EventRow } from '../types/event'
 
 type Props = { data: EventRow[] }
-// Define ImageEntry more robustly, matching what your API returns
 type ImageEntry = { 
   id: string; 
   name: string;
-  url: string; // This should be the URL like /api/images/${id}
+  url: string; 
 }
 type Section = 'images' | 'info' | 'participants'
 
@@ -18,15 +16,15 @@ export default function SheetTable({ data }: Props) {
   const BORDER = 'border border-blue-700'
   const bgCycle = ['bg-blue-50', 'bg-pink-50', 'bg-gray-100']
 
-  // Stores an array of currently open section types for each row index
   const [sectionsByRow, setSectionsByRow] = useState<Record<number, Section[]>>({})
-  // Stores the fetched images for each row index
   const [imagesByRow, setImagesByRow] = useState<Record<number, ImageEntry[]>>({})
-  // Stores loading state for individual images (keyed by rowIdx-img.id for uniqueness)
   const [loadingImagePlaceholders, setLoadingImagePlaceholders] = useState<Record<string, boolean>>({})
-  // Stores loading state for the entire image section of a row (keyed by rowIdx)
   const [loadingImageSection, setLoadingImageSection] = useState<Record<number, boolean>>({})
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
+  // State for lightbox image dimensions - useful for next/image with layout="responsive" or "intrinsic"
+  // For layout="fill" this is less critical if parent constrains size.
+  // const [lightboxImageSize, setLightboxImageSize] = useState<{width: number, height: number} | null>(null);
+
 
   const toggleSection = async (
     rowIdx: number,
@@ -38,18 +36,15 @@ export default function SheetTable({ data }: Props) {
     let nextSections: Section[]
 
     if (isSectionOpen) {
-      // Close the section
       nextSections = currentSections.filter(s => s !== section)
     } else {
-      // Open the section - make it the first (topmost)
       nextSections = [section, ...currentSections.filter(s => s !== section)]
       
-      // If opening 'images' section and it hasn't been fetched yet for this row
       if (section === 'images' && folderUrl && !imagesByRow[rowIdx]) {
         const match = folderUrl.match(/\/folders\/([A-Za-z0-9_-]+)/)
         if (match && match[1]) {
           const folderId = match[1]
-          setLoadingImageSection(prev => ({ ...prev, [rowIdx]: true })) // Show loading for the whole section
+          setLoadingImageSection(prev => ({ ...prev, [rowIdx]: true }))
           try {
             const res = await fetch(`/api/images?folderId=${folderId}`)
             if (!res.ok) {
@@ -58,7 +53,6 @@ export default function SheetTable({ data }: Props) {
             const json = await res.json()
             if (json.images && Array.isArray(json.images)) {
               setImagesByRow(r => ({ ...r, [rowIdx]: json.images }))
-              // Initialize placeholder loading state for each new image
               setLoadingImagePlaceholders(prev => {
                 const newStates = { ...prev }
                 json.images.forEach((img: ImageEntry) => {
@@ -68,21 +62,20 @@ export default function SheetTable({ data }: Props) {
               });
             } else {
               console.error('Fetched data does not contain an images array:', json)
-              setImagesByRow(r => ({ ...r, [rowIdx]: [] })) // Set to empty if malformed
+              setImagesByRow(r => ({ ...r, [rowIdx]: [] }))
             }
           } catch (e) {
             console.error('Image fetch error for row', rowIdx, ':', e)
-            setImagesByRow(r => ({ ...r, [rowIdx]: [] })) // Set to empty on error to prevent broken state
+            setImagesByRow(r => ({ ...r, [rowIdx]: [] }))
           } finally {
             setLoadingImageSection(prev => ({ ...prev, [rowIdx]: false }))
           }
         } else {
           console.warn("Could not extract folderId from URL:", folderUrl);
-          setImagesByRow(r => ({ ...r, [rowIdx]: [] })); // No valid folder URL
+          setImagesByRow(r => ({ ...r, [rowIdx]: [] }));
         }
       }
     }
-    // Update UI immediately to open/close the section
     setSectionsByRow(prev => ({ ...prev, [rowIdx]: nextSections }))
   }
 
@@ -92,8 +85,7 @@ export default function SheetTable({ data }: Props) {
 
   const handleImageError = (rowIdx: number, imgId: string) => {
     console.error(`Failed to load image: row ${rowIdx}, id ${imgId}`);
-    setLoadingImagePlaceholders(prev => ({ ...prev, [`${rowIdx}-${imgId}`]: false })); // Stop showing loader even on error
-    // Optionally, you could set a "broken image" placeholder here
+    setLoadingImagePlaceholders(prev => ({ ...prev, [`${rowIdx}-${imgId}`]: false }));
   };
 
 
@@ -108,19 +100,27 @@ export default function SheetTable({ data }: Props) {
           onClick={() => setLightboxUrl(null)}
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 cursor-zoom-out"
         >
-          <img
-            src={lightboxUrl}
-            alt="Förhandsvisning"
-            className="max-w-full max-h-full rounded shadow-lg object-contain"
+          {/* Using a container for next/image with layout="fill" or for intrinsic sizing */}
+          <div 
+            className="relative max-w-full max-h-full" 
             onClick={(e) => e.stopPropagation()} // Prevent closing lightbox when clicking on image itself
-          />
+            style={{width: '90vw', height: '90vh'}} // Example constraint, adjust as needed
+          >
+            <Image
+              src={lightboxUrl}
+              alt="Förhandsvisning"
+              layout="fill" // Fills the parent container
+              objectFit="contain" // Ensures aspect ratio is maintained within the bounds
+              className="rounded shadow-lg" // Apply styling to the Image component
+              // To get width/height for other layouts, you might need to load the image first
+              // or have them in your data. For now, layout="fill" is good for a lightbox.
+            />
+          </div>
         </div>
       )}
 
-      {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto p-4 w-full max-w-screen-xl mx-auto">
         <table className={`w-full table-fixed border-collapse ${BORDER} font-mono text-gray-800`}>
-          {/* Table Head */}
           <thead>
             <tr>
               <th className={`${BORDER} px-4 py-2 text-left w-1/3`}>Titel</th>
@@ -128,7 +128,6 @@ export default function SheetTable({ data }: Props) {
               <th className={`${BORDER} px-4 py-2 text-left w-1/3`}>Startdatum</th>
             </tr>
           </thead>
-          {/* Table Body */}
           <tbody>
             {data.map((row, idx) => {
               const bg = bgCycle[idx % bgCycle.length];
@@ -187,7 +186,7 @@ export default function SheetTable({ data }: Props) {
                               rel="noopener noreferrer"
                               className="underline cursor-pointer text-blue-600 hover:text-blue-800"
                             >
-                              Öppna event &#x2197; {/* External link icon */}
+                              Öppna event &#x2197;
                             </a>
                           </li>
                         )}
@@ -196,7 +195,6 @@ export default function SheetTable({ data }: Props) {
                     <td className={`${BORDER} px-4 py-2 align-top`}>{row.Startdatum}</td>
                   </tr>
 
-                  {/* Expanded Sections - Render based on the order in openSectionsForRow */}
                   {openSectionsForRow.map(sectionType => {
                     if (sectionType === 'images') {
                       return (
@@ -216,22 +214,24 @@ export default function SheetTable({ data }: Props) {
                                 {imagesForRow.map(img => (
                                   <div
                                     key={`${idx}-${img.id}`}
-                                    className={`relative aspect-square overflow-hidden cursor-pointer ${BORDER} bg-gray-200`}
-                                    onClick={() => setLightboxUrl(img.url)} // Use img.url which is /api/images/${img.id}
+                                    className={`relative aspect-square overflow-hidden cursor-pointer bg-gray-200`} // Removed BORDER for cleaner image look
+                                    onClick={() => setLightboxUrl(img.url)}
                                   >
                                     {loadingImagePlaceholders[`${idx}-${img.id}`] && (
-                                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100/50">
+                                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100/50 z-10">
                                         <div className={`h-6 w-6 animate-spin rounded-full ${BORDER} border-t-transparent`} />
                                       </div>
                                     )}
-                                    {/* Using next/image is highly recommended here instead of <img> */}
-                                    <img
-                                      src={img.url} // This URL should be like /api/images/${img.id}
+                                    <Image
+                                      src={img.url} 
                                       alt={img.name || row.Titel}
-                                      onLoad={() => handleImageLoad(idx, img.id)}
+                                      layout="fill"
+                                      objectFit="cover"
+                                      className={`transition-opacity duration-300 ${loadingImagePlaceholders[`${idx}-${img.id}`] ? 'opacity-0' : 'opacity-100'}`}
+                                      onLoadingComplete={() => handleImageLoad(idx, img.id)}
                                       onError={() => handleImageError(idx, img.id)}
-                                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${loadingImagePlaceholders[`${idx}-${img.id}`] ? 'opacity-0' : 'opacity-100'}`}
-                                      loading="lazy" // Basic browser lazy loading
+                                      // sizes attribute can optimize image selection if you have different layouts
+                                      // e.g., sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16.6vw"
                                     />
                                   </div>
                                 ))}
@@ -263,10 +263,9 @@ export default function SheetTable({ data }: Props) {
                         </tr>
                       );
                     }
-                    return null; // Should not happen if sectionType is valid
+                    return null;
                   })}
 
-                  {/* Separator Row */}
                   {idx < data.length - 1 && (
                     <tr>
                       <td colSpan={3} className="h-4 bg-white border-none p-0" />
@@ -278,7 +277,6 @@ export default function SheetTable({ data }: Props) {
           </tbody>
         </table>
       </div>
-      {/* TODO: Add mobile-friendly view here if needed */}
     </>
   );
 }
