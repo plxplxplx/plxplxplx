@@ -20,10 +20,12 @@ export default function ArticleTable({ articles }: Props) {
   }
 
   return (
-    <div className="hidden md:block overflow-x-auto p-4 w-full">
-      <table
-        className={`
-          min-w-full
+    <div className="p-4 w-full">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
+        <table
+          className={`
+            min-w-full
           table-fixed
           border-collapse
           ${BORDER} ${BORDER_COLOR}
@@ -115,6 +117,50 @@ export default function ArticleTable({ articles }: Props) {
           })}
         </tbody>
       </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden">
+        {articles.map((row, idx) => {
+          const bg = bgCycle[idx % bgCycle.length]
+          const link = (row['Länk'] || '').trim()
+
+          return (
+            <div
+              key={idx}
+              className={`
+                ${BORDER} ${BORDER_COLOR} ${bg}
+                p-4 mb-4 rounded shadow
+              `}
+            >
+              <p className="text-sm text-gray-600">
+                Datum: {row.Datum}
+              </p>
+              <h3 className="text-lg font-bold mb-1 break-words">
+                {row.Titel}
+              </h3>
+              <p className="text-sm text-gray-600 mb-1">
+                Medium: {row.Medium}
+              </p>
+              {link.startsWith('http') && (
+                <div className="mb-2">
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline cursor-pointer text-blue-600"
+                  >
+                    Läs
+                  </a>
+                </div>
+              )}
+              <p className="text-sm break-words">
+                {row.Sammanfattning}
+              </p>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
