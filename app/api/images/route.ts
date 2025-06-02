@@ -1,12 +1,30 @@
 // app/api/images/route.ts
 import { NextResponse, NextRequest } from 'next/server';
-// fs and path are no longer needed for reading the key file
 import { google, drive_v3 } from 'googleapis'; // drive_v3 might be needed if you use its types
 import { JWTInput } from 'google-auth-library';
-// Assuming buildImageUrl constructs URLs like /api/images/${fileId}
-// You'll need to define this function or import it.
-// For now, let's assume it exists and does:
-const buildImageUrl = (fileId: string) => `/api-proxy-to-images-id/${fileId}`; // Placeholder for clarity
+
+// Define the expected shape of the *resolved* params object if needed by buildImageUrl
+// For now, buildImageUrl just takes a string
+// interface ResolvedParams {
+//   id: string;
+// }
+
+// Assuming buildImageUrl constructs URLs like /api/images/[id]
+// This function should ideally live in a lib/utils file if used elsewhere
+const buildImageUrl = (fileId: string) => `/api/images/${fileId}`; // Used to construct URL to the dynamic streaming route
+
+// Interface for individual errors in the Google API error response
+interface GoogleApiErrorItem {
+  reason?: string;
+  message?: string;
+  domain?: string;
+}
+
+// Interface for the overall Google API error structure
+interface GoogleApiError extends Error {
+  code?: number | string;
+  errors?: GoogleApiErrorItem[];
+}
 
 
 export async function GET(req: NextRequest) {
@@ -83,26 +101,23 @@ export async function GET(req: NextRequest) {
       .map(f => ({
         id: f.id,
         name: f.name,
-        // Important: Ensure buildImageUrl creates the correct URL to your *other* API endpoint
-        // e.g., if your other endpoint is /api/image-stream/[id], then use that.
-        // If you want this current API to *also* stream, that's a different logic.
-        // Assuming buildImageUrl is meant to point to your `/api/images/[id]` endpoint
-        // but since this *is* /api/images, you might need a different base path for streaming endpoint
-        // or this endpoint only returns metadata.
-        // For now, I'll assume `buildImageUrl` is a placeholder for the URL structure you intend.
-        // If the actual streaming endpoint is /api/images/[id], then:
-        url: `/api/images/${f.id}`, // This will point to your other dynamic route for streaming
+        url: buildImageUrl(f.id), // Using the buildImageUrl function here
       }));
 
     return NextResponse.json({ images });
   } catch (error) {
-    const err = error as GoogleApiError; // Use your GoogleApiError type
+    const err = error as GoogleApiError; 
     let errorMessage = `Drive API error while listing folder contents: ${err.message || 'Unknown error'}`;
-    let statusCode = 500;
+    // Changed 'let' to 'const' as statusCode is not reassigned in this block
+    const statusCode = 500; 
 
     if (err.code === 'ERR_OSSL_UNSUPPORTED' || (err.message && err.message.includes('ERR_OSSL_UNSUPPORTED'))) {
         errorMessage = `Cryptographic error with private key (ERR_OSSL_UNSUPPORTED).`;
     }
+    // Note: The original logic to set statusCode based on err.code (like 404) was removed in the
+    // previous iteration for this specific catch block. If you need more specific status codes
+    // from Drive API errors here (e.g., if the folder itself is not found), you'd add that logic back.
+    // For now, it defaults to 500 for any drive.files.list error other than OSSL.
     
     console.error(`🔴 ERROR [api/images]: ${errorMessage}. Full Error:`, err);
     return NextResponse.json(
