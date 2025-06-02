@@ -1,7 +1,6 @@
 'use client'
-// Removed useEffect from here as it was unused
 import React, { useState } from 'react' 
-import Image from 'next/image' // Import next/image
+import Image from 'next/image'
 import { EventRow } from '../types/event'
 
 type Props = { data: EventRow[] }
@@ -14,17 +13,16 @@ type Section = 'images' | 'info' | 'participants'
 
 export default function SheetTable({ data }: Props) {
   const BORDER = 'border border-blue-700'
-  const bgCycle = ['bg-blue-50', 'bg-pink-50', 'bg-gray-100']
+  // Using lighter backgrounds for better contrast with dark text
+  const bgCycle = ['bg-slate-50', 'bg-stone-50', 'bg-zinc-50'] 
+  // Base text color for mobile cards, ensuring readability
+  const MOBILE_TEXT_COLOR = 'text-slate-800' 
 
   const [sectionsByRow, setSectionsByRow] = useState<Record<number, Section[]>>({})
   const [imagesByRow, setImagesByRow] = useState<Record<number, ImageEntry[]>>({})
   const [loadingImagePlaceholders, setLoadingImagePlaceholders] = useState<Record<string, boolean>>({})
   const [loadingImageSection, setLoadingImageSection] = useState<Record<number, boolean>>({})
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
-  // State for lightbox image dimensions - useful for next/image with layout="responsive" or "intrinsic"
-  // For layout="fill" this is less critical if parent constrains size.
-  // const [lightboxImageSize, setLightboxImageSize] = useState<{width: number, height: number} | null>(null);
-
 
   const toggleSection = async (
     rowIdx: number,
@@ -71,7 +69,7 @@ export default function SheetTable({ data }: Props) {
             setLoadingImageSection(prev => ({ ...prev, [rowIdx]: false }))
           }
         } else {
-          console.warn("Could not extract folderId from URL:", folderUrl);
+          console.warn("Could not extract folderId from URL for images:", folderUrl);
           setImagesByRow(r => ({ ...r, [rowIdx]: [] }));
         }
       }
@@ -88,10 +86,75 @@ export default function SheetTable({ data }: Props) {
     setLoadingImagePlaceholders(prev => ({ ...prev, [`${rowIdx}-${imgId}`]: false }));
   };
 
-
   if (!data.length) {
     return <p className="p-4 text-gray-700">Inga evenemang att visa.</p>
   }
+
+  const renderExpandedContent = (row: EventRow, idx: number, sectionType: Section) => {
+    const imagesForRow = imagesByRow[idx] || [];
+    const isLoadingThisImageSection = loadingImageSection[idx];
+
+    switch (sectionType) {
+      case 'images':
+        return (
+          <div className={`px-4 py-4 ${MOBILE_TEXT_COLOR}`}>
+            {isLoadingThisImageSection && (
+              <div className="flex items-center justify-center h-32">
+                <div className={`h-8 w-8 animate-spin border-4 ${BORDER} border-t-transparent`} /> {/* Spinner not rounded */}
+                <span className="ml-2">Laddar bilder...</span>
+              </div>
+            )}
+            {!isLoadingThisImageSection && imagesForRow.length === 0 && (
+                <em className="text-gray-500">Inga bilder hittades eller kunde inte laddas.</em>
+            )}
+            {!isLoadingThisImageSection && imagesForRow.length > 0 && (
+              // Adjusted grid for desktop image sizes - more columns on larger screens
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2"> 
+                {imagesForRow.map(img => (
+                  <div
+                    key={`${idx}-${img.id}-gallery`}
+                    className={`relative aspect-square overflow-hidden cursor-pointer bg-gray-200`}
+                    onClick={() => setLightboxUrl(img.url)}
+                  >
+                    {loadingImagePlaceholders[`${idx}-${img.id}`] && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100/50 z-10">
+                        <div className={`h-6 w-6 animate-spin border-4 ${BORDER} border-t-transparent`} /> {/* Spinner not rounded */}
+                      </div>
+                    )}
+                    <Image
+                      src={img.url} 
+                      alt={img.name || row.Titel}
+                      layout="fill"
+                      objectFit="cover"
+                      className={`transition-opacity duration-300 ${loadingImagePlaceholders[`${idx}-${img.id}`] ? 'opacity-0' : 'opacity-100'}`}
+                      onLoadingComplete={() => handleImageLoad(idx, img.id)}
+                      onError={() => handleImageError(idx, img.id)}
+                      sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 16vw, (max-width: 1280px) 12.5vw, 10vw" // Example sizes
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      case 'info':
+        return row.Beskrivning ? (
+          <div className={`px-4 py-4 break-words whitespace-pre-line ${MOBILE_TEXT_COLOR}`}>{row.Beskrivning}</div>
+        ) : null;
+      case 'participants':
+        return row.Medverkande ? (
+          <div className={`px-4 py-4 break-words ${MOBILE_TEXT_COLOR}`}>
+            <ul className="list-disc list-inside space-y-1">
+              {row.Medverkande.split(',').map((p, i) => (
+                <li key={`${idx}-participant-${i}`}>{p.trim()}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
@@ -100,25 +163,23 @@ export default function SheetTable({ data }: Props) {
           onClick={() => setLightboxUrl(null)}
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 cursor-zoom-out"
         >
-          {/* Using a container for next/image with layout="fill" or for intrinsic sizing */}
           <div 
-            className="relative max-w-full max-h-full" 
-            onClick={(e) => e.stopPropagation()} // Prevent closing lightbox when clicking on image itself
-            style={{width: '90vw', height: '90vh'}} // Example constraint, adjust as needed
+            className="relative max-w-full max-h-full shadow-lg"  // Removed 'rounded' from lightbox container
+            onClick={(e) => e.stopPropagation()}
+            style={{width: '90vw', height: '90vh'}}
           >
             <Image
               src={lightboxUrl}
               alt="Förhandsvisning"
-              layout="fill" // Fills the parent container
-              objectFit="contain" // Ensures aspect ratio is maintained within the bounds
-              className="rounded shadow-lg" // Apply styling to the Image component
-              // To get width/height for other layouts, you might need to load the image first
-              // or have them in your data. For now, layout="fill" is good for a lightbox.
+              layout="fill"
+              objectFit="contain"
+              className="" // Removed 'rounded' from lightbox Image
             />
           </div>
         </div>
       )}
 
+      {/* Desktop Table View */}
       <div className="hidden md:block overflow-x-auto p-4 w-full max-w-screen-xl mx-auto">
         <table className={`w-full table-fixed border-collapse ${BORDER} font-mono text-gray-800`}>
           <thead>
@@ -134,11 +195,9 @@ export default function SheetTable({ data }: Props) {
               const folderUrl = row['Länk utvalda bilder'] || row['Länk alla bilder'] || '';
               const eventUrl = row['Länk till event'] || '';
               const openSectionsForRow = sectionsByRow[idx] || [];
-              const imagesForRow = imagesByRow[idx] || [];
-              const isLoadingThisImageSection = loadingImageSection[idx];
-
+             
               return (
-                <React.Fragment key={`event-${idx}`}>
+                <React.Fragment key={`event-desktop-${idx}`}>
                   <tr className={bg}>
                     <td className={`${BORDER} px-4 py-2 text-lg font-bold align-top`}>{row.Titel}</td>
                     <td className={`${BORDER} px-4 py-2 align-top`}>
@@ -195,77 +254,14 @@ export default function SheetTable({ data }: Props) {
                     <td className={`${BORDER} px-4 py-2 align-top`}>{row.Startdatum}</td>
                   </tr>
 
-                  {openSectionsForRow.map(sectionType => {
-                    if (sectionType === 'images') {
-                      return (
-                        <tr key={`${idx}-images-section`} className={bg}>
-                          <td colSpan={3} className={`${BORDER} px-4 py-4`}>
-                            {isLoadingThisImageSection && (
-                              <div className="flex items-center justify-center h-32">
-                                <div className={`h-8 w-8 animate-spin rounded-full ${BORDER} border-t-transparent`} />
-                                <span className="ml-2">Laddar bilder...</span>
-                              </div>
-                            )}
-                            {!isLoadingThisImageSection && imagesForRow.length === 0 && (
-                                <em className="text-gray-500">Inga bilder hittades eller kunde inte laddas.</em>
-                            )}
-                            {!isLoadingThisImageSection && imagesForRow.length > 0 && (
-                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                                {imagesForRow.map(img => (
-                                  <div
-                                    key={`${idx}-${img.id}`}
-                                    className={`relative aspect-square overflow-hidden cursor-pointer bg-gray-200`} // Removed BORDER for cleaner image look
-                                    onClick={() => setLightboxUrl(img.url)}
-                                  >
-                                    {loadingImagePlaceholders[`${idx}-${img.id}`] && (
-                                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100/50 z-10">
-                                        <div className={`h-6 w-6 animate-spin rounded-full ${BORDER} border-t-transparent`} />
-                                      </div>
-                                    )}
-                                    <Image
-                                      src={img.url} 
-                                      alt={img.name || row.Titel}
-                                      layout="fill"
-                                      objectFit="cover"
-                                      className={`transition-opacity duration-300 ${loadingImagePlaceholders[`${idx}-${img.id}`] ? 'opacity-0' : 'opacity-100'}`}
-                                      onLoadingComplete={() => handleImageLoad(idx, img.id)}
-                                      onError={() => handleImageError(idx, img.id)}
-                                      // sizes attribute can optimize image selection if you have different layouts
-                                      // e.g., sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16.6vw"
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    }
-                    if (sectionType === 'info' && row.Beskrivning) {
-                      return (
-                        <tr key={`${idx}-info-section`} className={bg}>
-                          <td colSpan={3} className={`${BORDER} px-4 py-4 break-words whitespace-pre-line`}>
-                            {row.Beskrivning}
-                          </td>
-                        </tr>
-                      );
-                    }
-                    if (sectionType === 'participants' && row.Medverkande) {
-                      return (
-                        <tr key={`${idx}-participants-section`} className={bg}>
-                          <td colSpan={3} className={`${BORDER} px-4 py-4 break-words`}>
-                            <ul className="list-disc list-inside space-y-1">
-                              {row.Medverkande.split(',').map((p, i) => (
-                                <li key={`${idx}-participant-${i}`}>{p.trim()}</li>
-                              ))}
-                            </ul>
-                          </td>
-                        </tr>
-                      );
-                    }
-                    return null;
-                  })}
-
+                  {openSectionsForRow.map(sectionType => (
+                    <tr key={`${idx}-${sectionType}-section-desktop`} className={bg}>
+                      <td colSpan={3} className={`${BORDER} px-4 py-4`}> {/* Added BORDER here for consistency */}
+                        {renderExpandedContent(row, idx, sectionType)} {/* Removed bg from here, it's on <tr> */}
+                      </td>
+                    </tr>
+                  ))}
+                  
                   {idx < data.length - 1 && (
                     <tr>
                       <td colSpan={3} className="h-4 bg-white border-none p-0" />
@@ -277,6 +273,74 @@ export default function SheetTable({ data }: Props) {
           </tbody>
         </table>
       </div>
+
+      {/* Mobile Card View */}
+      <div className={`md:hidden p-2 space-y-3 ${MOBILE_TEXT_COLOR}`}> {/* Apply base mobile text color */}
+        {data.map((row, idx) => {
+          const bg = bgCycle[idx % bgCycle.length];
+          const folderUrl = row['Länk utvalda bilder'] || row['Länk alla bilder'] || '';
+          const eventUrl = row['Länk till event'] || '';
+          const openSectionsForRow = sectionsByRow[idx] || [];
+
+          return (
+            <div key={`event-mobile-${idx}`} className={`shadow-md overflow-hidden ${bg} ${BORDER}`}> {/* Removed rounded-lg */}
+              <div className="p-3">
+                <h3 className="text-md font-bold mb-1">{row.Titel}</h3> {/* Inherits MOBILE_TEXT_COLOR */}
+                <p className="text-xs"><strong>Start:</strong> {row.Startdatum}</p> {/* Inherits MOBILE_TEXT_COLOR */}
+                <p className="text-xs"><strong>Kategori:</strong> {row.Kategori}</p> {/* Inherits MOBILE_TEXT_COLOR */}
+                <p className="text-xs mb-2"><strong>Plats:</strong> {row.Plats}</p> {/* Inherits MOBILE_TEXT_COLOR */}
+                
+                <div className="space-y-1 text-sm">
+                    {folderUrl && (
+                        <button
+                          onClick={() => toggleSection(idx, 'images', folderUrl)}
+                          className="block w-full text-left underline cursor-pointer text-blue-600 hover:text-blue-800 py-1"
+                          aria-expanded={openSectionsForRow.includes('images')}
+                        >
+                          {openSectionsForRow.includes('images') ? 'Stäng bilder ↑' : 'Visa bilder ↓'}
+                        </button>
+                    )}
+                    {row.Beskrivning && (
+                        <button
+                          onClick={() => toggleSection(idx, 'info')}
+                          className="block w-full text-left underline cursor-pointer text-blue-600 hover:text-blue-800 py-1"
+                          aria-expanded={openSectionsForRow.includes('info')}
+                        >
+                          {openSectionsForRow.includes('info') ? 'Stäng info ↑' : 'Mer info ↓'}
+                        </button>
+                    )}
+                    {row.Medverkande && (
+                        <button
+                          onClick={() => toggleSection(idx, 'participants')}
+                          className="block w-full text-left underline cursor-pointer text-blue-600 hover:text-blue-800 py-1"
+                          aria-expanded={openSectionsForRow.includes('participants')}
+                        >
+                          {openSectionsForRow.includes('participants') ? 'Stäng medverkande ↑' : 'Medverkande ↓'}
+                        </button>
+                    )}
+                    {eventUrl && (
+                        <a
+                            href={eventUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full text-left underline cursor-pointer text-blue-600 hover:text-blue-800 py-1"
+                        >
+                            Öppna event &#x2197;
+                        </a>
+                    )}
+                </div>
+              </div>
+              {openSectionsForRow.map(sectionType => 
+                <div key={`${idx}-${sectionType}-section-mobile`} className={`${BORDER_MOBILE_SECTION} ${bg}`}>
+                  {renderExpandedContent(row, idx, sectionType)} {/* Removed bg from here */}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }
+
+const BORDER_MOBILE_SECTION = 'border-t border-blue-600';
