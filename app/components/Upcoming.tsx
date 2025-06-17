@@ -45,11 +45,11 @@ export default function Upcoming() {
     `${BORDER} px-6 py-4 font-mono text-gray-800 text-xl ` +
     'hover:bg-blue-100 transition-colors'
   const HEADER_CELL =
-    `${BORDER} px-6 py-4 bg-blue-200 text-blue-800 ` +
+    `${BORDER} px-6 py-4 bg-pink-100 text-blue-800 ` +   // ← light-pink header
     'text-2xl font-bold text-center'
 
   return (
-    <div className="flex items-center justify-center h-full w-full bg-blue-50">
+    <div className="flex items-center justify-center h-full w-full bg-blue-50 px-4 md:px-8">
       <table className="table-fixed border-collapse w-full">
         <thead>
           <tr>

@@ -14,7 +14,7 @@ type Section = 'images' | 'info' | 'participants'
 export default function SheetTable({ data }: Props) {
   const BORDER = 'border border-blue-700'
   // Using lighter backgrounds for better contrast with dark text
-  const bgCycle = ['bg-slate-50', 'bg-stone-50', 'bg-zinc-50'] 
+  const bgCycle = ['bg-pink-100', 'bg-blue-100', 'bg-zinc-50'] 
   // Base text color for mobile cards, ensuring readability
   const MOBILE_TEXT_COLOR = 'text-slate-800' 
 
