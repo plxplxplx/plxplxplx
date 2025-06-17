@@ -2,7 +2,7 @@
 
 import useSWR from 'swr'
 
-/* Sheet column names */
+/* Sheet columns */
 export interface UpcomingRow {
   Titel: string
   Kategori: string
@@ -14,27 +14,48 @@ export interface UpcomingRow {
   'Länk till event': string
 }
 
-const fetcher = (u: string) => fetch(u).then(r => r.json())
+/* fetch helper with guard */
+const fetcher = async (url: string): Promise<UpcomingRow[]> => {
+  const res  = await fetch(url)
+  const json = await res.json()
+
+  if (!Array.isArray(json)) {
+    const msg = json?.error ?? 'Unexpected data format'
+    throw new Error(msg)
+  }
+  return json
+}
 
 export default function Upcoming() {
   const { data, error } = useSWR<UpcomingRow[]>('/api/upcoming', fetcher)
 
-  if (error) return <p className="p-6">Kunde inte ladda.</p>
-  if (!data)  return <p className="p-6">Laddar…</p>
+  if (error)
+    return (
+      <p className="p-6 font-mono text-red-600">
+        Failed&nbsp;to&nbsp;load&nbsp;events: {error.message}
+      </p>
+    )
+
+  if (!data)
+    return <p className="p-6 font-mono">Loading…</p>
 
   /* shared Tailwind pieces */
   const BORDER      = 'border border-blue-700'
-  const CELL_BASE   = `${BORDER} px-6 py-4 font-mono text-gray-800 text-xl
-                        hover:bg-blue-100 transition-colors`
-  const HEADER_CELL = `${BORDER} px-6 py-4 bg-pink-200 text-blue-800
-                        text-2xl font-bold text-center`
+  const CELL_BASE   =
+    `${BORDER} px-6 py-4 font-mono text-gray-800 text-xl ` +
+    'hover:bg-blue-100 transition-colors'
+  const HEADER_CELL =
+    `${BORDER} px-6 py-4 bg-blue-200 text-blue-800 ` +
+    'text-2xl font-bold text-center'
 
   return (
     <div className="flex items-center justify-center h-full w-full bg-blue-50">
-      <table className="table-fixed border-collapse">
+      <table className="table-fixed border-collapse w-full">
         <thead>
           <tr>
-            <th colSpan={3} className={HEADER_CELL}>Upcoming events</th>
+            <th colSpan={3} className={HEADER_CELL}>
+              Upcoming events
+            </th>
           </tr>
         </thead>
 
@@ -46,8 +67,12 @@ export default function Upcoming() {
 
               {/* Dates & Place */}
               <td className={CELL_BASE}>
-                <p><strong>Dates:</strong> {ev.Startdatum} – {ev.Slutdatum}</p>
-                <p><strong>Place:</strong> {ev.Plats}</p>
+                <p>
+                  <strong>Dates:</strong> {ev.Startdatum} – {ev.Slutdatum}
+                </p>
+                <p>
+                  <strong>Place:</strong> {ev.Plats}
+                </p>
               </td>
 
               {/* Link */}
@@ -59,9 +84,11 @@ export default function Upcoming() {
                     rel="noopener noreferrer"
                     className="text-blue-800 hover:underline"
                   >
-                    Info →
+                    Info&nbsp;&rarr;
                   </a>
-                ) : '—'}
+                ) : (
+                  '—'
+                )}
               </td>
             </tr>
           ))}
