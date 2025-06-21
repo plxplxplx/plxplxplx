@@ -4,9 +4,31 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { FaInstagram, FaFacebookF } from 'react-icons/fa';
+import { useEffect, useRef } from 'react'; // Import React hooks
 
 export default function Navbar() {
   const path = usePathname() || '/';
+  const navRef = useRef<HTMLElement>(null); // Create a ref to attach to the nav element
+
+  // This effect measures the navbar's height and sets a global CSS variable.
+  useEffect(() => {
+    const updateNavHeight = () => {
+      if (navRef.current) {
+        const navHeight = navRef.current.offsetHeight;
+        // Set the CSS variable on the root element (<html>)
+        document.documentElement.style.setProperty('--nav-h', `${navHeight}px`);
+      }
+    };
+
+    // Update the height on initial render and on window resize
+    updateNavHeight();
+    window.addEventListener('resize', updateNavHeight);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('resize', updateNavHeight);
+    };
+  }, []); // The empty dependency array ensures this effect runs only once on mount
 
   const BORDER = 'border';
   const BORDER_COLOR = 'border-blue-700';
@@ -33,7 +55,8 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+    // Attach the ref to the <nav> element
+    <nav ref={navRef} className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
       <div className="w-full">
         {/* Mobile layout */}
         <div className="flex flex-col items-center justify-center md:hidden border-b border-blue-700 bg-blue-50">

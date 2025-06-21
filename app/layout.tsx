@@ -1,48 +1,55 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
 
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
-});
-
+})
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
-});
+})
 
 export const metadata: Metadata = {
   title: 'PLX Site',
   description: 'Home / Media / Event',
-};
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen relative`}
+        className={`
+          ${geistSans.variable} ${geistMono.variable}
+          antialiased flex flex-col min-h-screen
+          relative bg-black text-white
+        `}
       >
-        {/* NAVBAR always on top */}
         <Navbar />
 
-        {/* MAIN CONTENT fills available space */}
-        <main className="relative z-10 flex-grow max-w-screen-xl mx-auto px-4 pt-24 pb-10 text-white">
+        {/* This is the corrected <main> element. 
+          The horizontal padding 'px-4' has been removed.
+          'w-full' has been added to ensure it correctly fills the available width.
+        */}
+        <main
+          style={{ paddingTop: 'var(--nav-h)' }}
+          className="flex-grow w-full max-w-screen-xl mx-auto pb-10 relative z-10"
+        >
           {children}
         </main>
 
-        {/* FOOTER always on top */}
         <footer className="relative z-10">
           <Footer />
         </footer>
       </body>
     </html>
-  );
+  )
 }
