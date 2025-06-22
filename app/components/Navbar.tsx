@@ -4,64 +4,57 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { FaInstagram, FaFacebookF } from 'react-icons/fa';
-import { useEffect, useRef } from 'react'; // Import React hooks
+import { useEffect, useRef } from 'react';
 
 export default function Navbar() {
   const path = usePathname() || '/';
-  const navRef = useRef<HTMLElement>(null); // Create a ref to attach to the nav element
+  const navRef = useRef<HTMLElement>(null);
 
-  // This effect measures the navbar's height and sets a global CSS variable.
   useEffect(() => {
     const updateNavHeight = () => {
       if (navRef.current) {
         const navHeight = navRef.current.offsetHeight;
-        // Set the CSS variable on the root element (<html>)
         document.documentElement.style.setProperty('--nav-h', `${navHeight}px`);
       }
     };
 
-    // Update the height on initial render and on window resize
     updateNavHeight();
     window.addEventListener('resize', updateNavHeight);
-
-    // Cleanup the event listener when the component unmounts
     return () => {
       window.removeEventListener('resize', updateNavHeight);
     };
-  }, []); // The empty dependency array ensures this effect runs only once on mount
+  }, []);
 
   const BORDER = 'border';
-  const BORDER_COLOR = 'border-blue-700';
-  const FONT = 'font-mono text-gray-800';
+  const BORDER_COLOR = 'border-[#91A878]';
+  const FONT = 'font-mono';
 
-  // Shared cell styling with hover bg
-  const CELL = `${BORDER} ${BORDER_COLOR} px-4 py-3 md:py-5 text-sm sm:text-base hover:bg-orange-100 transition-colors duration-150`;
+  const CELL = `${BORDER} ${BORDER_COLOR} px-4 py-3 md:py-5 text-sm sm:text-base transition-colors duration-150`;
   const CELL_CONTENT = `flex items-center justify-center w-full h-full`;
 
   const isActive = (href: string) =>
     path === href
       ? 'text-black font-bold underline'
-      : 'text-blue-800 hover:underline';
+      : 'hover:underline';
 
   const externalLink = (label: string, href: string) => (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${CELL_CONTENT} text-blue-800 hover:underline`}
+      className={`${CELL_CONTENT} text-[#FDFD96] text-lg font-semibold hover:underline`}
     >
       {label}
     </a>
   );
 
   return (
-    // Attach the ref to the <nav> element
-    <nav ref={navRef} className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+    <nav ref={navRef} className="fixed top-0 left-0 w-full z-50 bg-black shadow-md">
       <div className="w-full">
         {/* Mobile layout */}
-        <div className="flex flex-col items-center justify-center md:hidden border-b border-blue-700 bg-blue-50">
+        <div className="flex flex-col items-center justify-center md:hidden border-b border-[#91A878] bg-[#1E1E1E]">
           {/* Logo */}
-          <div className="w-full bg-orange-600 flex items-center justify-center py-4 border-b border-blue-700">
+          <div className="w-full bg-[#C99C8B] flex items-center justify-center py-4 border-b border-[#91A878]">
             <Link href="/" aria-label="PLX Home">
               <Image
                 src="/recordshuvud_white.webp"
@@ -74,14 +67,14 @@ export default function Navbar() {
           </div>
 
           {/* Socials */}
-          <div className="flex w-full border-b border-blue-700">
+          <div className="flex w-full border-b border-[#91A878]">
             <div className={`${CELL} flex-1`}>
               <a
                 href="https://www.instagram.com/plxplxplx/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className={`${CELL_CONTENT} text-blue-700 hover:underline text-xl`}
+                className={`${CELL_CONTENT} text-[#FDFD96] text-xl font-semibold hover:underline`}
               >
                 <FaInstagram />
               </a>
@@ -92,41 +85,47 @@ export default function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className={`${CELL_CONTENT} text-blue-700 hover:underline text-xl`}
+                className={`${CELL_CONTENT} text-[#FDFD96] text-xl font-semibold hover:underline`}
               >
                 <FaFacebookF />
               </a>
             </div>
           </div>
 
-          {/* Left group */}
+          {/* Left group — solid background colors matching desktop */}
           <div className="flex w-full">
-            <div className={`${CELL} flex-1`}>
+            <div className={`${CELL} flex-[1.5] bg-[#91A878]`}>
               <Link href="/about" className={CELL_CONTENT}>
-                <span className={isActive('/about')}>About</span>
+                <span className="text-[#282828] text-lg font-semibold">
+                  <span className={isActive('/about')}>About</span>
+                </span>
               </Link>
             </div>
-            <div className={`${CELL} flex-1`}>
+            <div className={`${CELL} flex-[1.5] bg-[#F6BBA8]`}>
               <Link href="/media" className={CELL_CONTENT}>
-                <span className={isActive('/media')}>Media</span>
+                <span className="text-[#282828] text-lg font-semibold">
+                  <span className={isActive('/media')}>Media</span>
+                </span>
               </Link>
             </div>
-            <div className={`${CELL} flex-1`}>
+            <div className={`${CELL} flex-[1.5] bg-[#C99C8B]`}>
               <Link href="/event" className={CELL_CONTENT}>
-                <span className={isActive('/event')}>Archive</span>
+                <span className="text-[#282828] text-lg font-semibold">
+                  <span className={isActive('/event')}>Archive</span>
+                </span>
               </Link>
             </div>
           </div>
 
-          {/* Right group */}
+          {/* Right group — smaller flex */}
           <div className="flex w-full">
-            <div className={`${CELL} bg-blue-200 flex-1`}>
+            <div className={`${CELL} flex-1 bg-[#1E1E1E]`}>
               {externalLink('PLX Tjärö', 'https://plxtjaro.com/')}
             </div>
-            <div className={`${CELL} bg-blue-200 flex-1`}>
+            <div className={`${CELL} flex-1 bg-[#1E1E1E]`}>
               {externalLink('PLX Records', 'https://www.plxrecords.com/')}
             </div>
-            <div className={`${CELL} bg-blue-200 flex-1`}>
+            <div className={`${CELL} flex-1 bg-[#1E1E1E]`}>
               {externalLink('PLX LARP', 'https://www.plxplxplx.live/')}
             </div>
           </div>
@@ -135,29 +134,35 @@ export default function Navbar() {
         {/* Desktop layout */}
         <div className="hidden md:block overflow-x-auto">
           <table
-            className={`min-w-full table-fixed border-collapse ${BORDER} ${BORDER_COLOR} ${FONT} bg-blue-50`}
+            className={`min-w-full table-fixed border-collapse ${BORDER} ${BORDER_COLOR} ${FONT} bg-[#1E1E1E]`}
           >
             <tbody>
               <tr>
-                {/* Left side links */}
-                <td className={CELL}>
+                {/* Left group — wide columns */}
+                <td className={`${CELL} w-[14%] bg-[#91A878] hover:bg-[#91A878]`}>
                   <Link href="/about" className={CELL_CONTENT}>
-                    <span className={isActive('/about')}>About</span>
+                    <span className="text-[#282828] text-xl font-semibold">
+                      <span className={isActive('/about')}>About</span>
+                    </span>
                   </Link>
                 </td>
-                <td className={CELL}>
+                <td className={`${CELL} w-[14%] bg-[#F6BBA8] hover:bg-[#F6BBA8]`}>
                   <Link href="/media" className={CELL_CONTENT}>
-                    <span className={isActive('/media')}>Media</span>
+                    <span className="text-[#282828] text-xl font-semibold">
+                      <span className={isActive('/media')}>Media</span>
+                    </span>
                   </Link>
                 </td>
-                <td className={CELL}>
+                <td className={`${CELL} w-[14%] bg-[#C99C8B] hover:bg-[#C99C8B]`}>
                   <Link href="/event" className={CELL_CONTENT}>
-                    <span className={isActive('/event')}>Archive</span>
+                    <span className="text-[#282828] text-xl font-semibold">
+                      <span className={isActive('/event')}>Archive</span>
+                    </span>
                   </Link>
                 </td>
 
-                {/* Logo in center */}
-                <td className={`${CELL} bg-orange-600`}>
+                {/* Logo */}
+                <td className={`${CELL} w-[10%] bg-[#c98bb6]/50`}>
                   <Link href="/" aria-label="PLX Home" className={CELL_CONTENT}>
                     <Image
                       src="/recordshuvud_white.webp"
@@ -169,14 +174,14 @@ export default function Navbar() {
                   </Link>
                 </td>
 
-                {/* External links */}
-                <td className={`${CELL} bg-blue-200`}>
+                {/* Right group — narrow */}
+                <td className={`${CELL} w-[10%] bg-[#1E1E1E]`}>
                   {externalLink('PLX Tjärö', 'https://plxtjaro.com/')}
                 </td>
-                <td className={`${CELL} bg-blue-200`}>
+                <td className={`${CELL} w-[10%] bg-[#1E1E1E]`}>
                   {externalLink('PLX Records', 'https://www.plxrecords.com/')}
                 </td>
-                <td className={`${CELL} bg-blue-200`}>
+                <td className={`${CELL} w-[10%] bg-[#1E1E1E]`}>
                   {externalLink('PLX LARP', 'https://www.plxplxplx.live/')}
                 </td>
 
@@ -187,7 +192,7 @@ export default function Navbar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"
-                    className={`${CELL_CONTENT} text-blue-700 hover:underline text-xl`}
+                    className={`${CELL_CONTENT} text-[#FDFD96] text-xl font-semibold hover:underline`}
                   >
                     <FaInstagram />
                   </a>
@@ -198,7 +203,7 @@ export default function Navbar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Facebook"
-                    className={`${CELL_CONTENT} text-blue-700 hover:underline text-xl`}
+                    className={`${CELL_CONTENT} text-[#FDFD96] text-xl font-semibold hover:underline`}
                   >
                     <FaFacebookF />
                   </a>

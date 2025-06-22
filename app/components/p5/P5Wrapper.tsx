@@ -8,26 +8,31 @@ interface P5WrapperProps {
   style?: React.CSSProperties
 }
 
-/** Robust wrapper that loads p5 lazily and cleans up on HMR/unmount. */
 const P5Wrapper: React.FC<P5WrapperProps> = ({ sketch, style }) => {
-  const host = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const p5InstanceRef = useRef<p5 | null>(null)
 
   useEffect(() => {
     let cancelled = false
-    let instance: p5 | null = null
 
-    import('p5').then(({ default: P5 }) => {
-      if (cancelled || !host.current) return
-      instance = new P5(sketch, host.current)
-    })
+    const loadP5 = async () => {
+      const { default: P5 } = await import('p5')
+
+      if (!cancelled && containerRef.current) {
+        p5InstanceRef.current = new P5(sketch, containerRef.current)
+      }
+    }
+
+    loadP5()
 
     return () => {
       cancelled = true
-      instance?.remove()
+      p5InstanceRef.current?.remove()
+      p5InstanceRef.current = null
     }
   }, [sketch])
 
-  return <div ref={host} style={style} />
+  return <div ref={containerRef} style={style} />
 }
 
 export default React.memo(P5Wrapper)

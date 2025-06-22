@@ -16,7 +16,7 @@ export interface UpcomingRow {
 
 /* fetch helper with guard */
 const fetcher = async (url: string): Promise<UpcomingRow[]> => {
-  const res  = await fetch(url)
+  const res = await fetch(url)
   const json = await res.json()
 
   if (!Array.isArray(json)) {
@@ -31,63 +31,52 @@ export default function Upcoming() {
 
   if (error)
     return (
-      <p className="p-6 font-mono text-red-600">
-        Failed&nbsp;to&nbsp;load&nbsp;events: {error.message}
+      <p className="p-6 font-mono text-red-400 bg-black">
+        Failed to load events: {error.message}
       </p>
     )
 
   if (!data)
-    return <p className="p-6 font-mono">Loading…</p>
+    return <p className="p-6 font-mono text-[#91A878] bg-black">Loading…</p>
 
-  /* shared Tailwind pieces */
-  const BORDER      = 'border border-blue-700'
-  const CELL_BASE   =
-    `${BORDER} px-6 py-4 font-mono text-gray-800 text-xl ` +
-    'hover:bg-blue-100 transition-colors'
+  const BORDER = 'border border-[#91A878]'
+  const CELL_BASE =
+    `${BORDER} px-6 py-4 font-mono text-[#EDEDED] text-base ` +
+    'hover:bg-[#91A878]/10 transition-colors'
   const HEADER_CELL =
-    `${BORDER} px-6 py-4 bg-pink-100 text-blue-800 ` +   // ← light-pink header
+    `${BORDER} px-6 py-4 bg-[#1E1E1E] text-[#91A878] ` +
     'text-2xl font-bold text-center'
 
   return (
-    <div className="flex items-center justify-center h-full w-full bg-blue-50 px-4 md:px-8">
-      <table className="table-fixed border-collapse w-full">
+    <div className="flex items-center justify-center h-full w-full bg-black/90 px-4 md:px-8">
+      <table className="table-fixed border-collapse w-full shadow-lg">
         <thead>
           <tr>
             <th colSpan={3} className={HEADER_CELL}>
-              Upcoming events
+              Upcoming Events
             </th>
           </tr>
         </thead>
-
         <tbody>
           {data.map((ev, i) => (
             <tr key={i}>
-              {/* Title */}
-              <td className={`${CELL_BASE} font-bold`}>{ev.Titel}</td>
-
-              {/* Dates & Place */}
+              <td className={`${CELL_BASE} font-bold text-lg`}>{ev.Titel}</td>
               <td className={CELL_BASE}>
-                <p>
-                  <strong>Dates:</strong> {ev.Startdatum} – {ev.Slutdatum}
-                </p>
-                <p>
-                  <strong>Place:</strong> {ev.Plats}
-                </p>
+                <p><strong>Dates:</strong> {ev.Startdatum} – {ev.Slutdatum}</p>
+                <p><strong>Place:</strong> {ev.Plats}</p>
               </td>
-
-              {/* Link */}
               <td className={CELL_BASE}>
                 {ev['Länk till event'] ? (
                   <a
                     href={ev['Länk till event']}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-800 hover:underline"
+                    className="text-[#FDFD96] hover:underline font-semibold"
                   >
-                    Info&nbsp;&rarr;
+                    Info →
                   </a>
                 ) : (
-                  '—'
+                  <span className="text-gray-500">—</span>
                 )}
               </td>
             </tr>
