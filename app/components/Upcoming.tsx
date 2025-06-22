@@ -1,6 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
+import { useEffect } from 'react'
 
 /* Sheet columns */
 export interface UpcomingRow {
@@ -12,6 +13,11 @@ export interface UpcomingRow {
   Slutdatum: string
   Plats: string
   'Länk till event': string
+}
+
+/* Optional prop for controlling visibility from parent */
+type Props = {
+  onReady?: () => void
 }
 
 /* fetch helper with guard */
@@ -26,18 +32,30 @@ const fetcher = async (url: string): Promise<UpcomingRow[]> => {
   return json
 }
 
-export default function Upcoming() {
+export default function Upcoming({ onReady }: Props) {
   const { data, error } = useSWR<UpcomingRow[]>('/api/upcoming', fetcher)
 
-  if (error)
+  useEffect(() => {
+    if (data && onReady) {
+      onReady()
+    }
+  }, [data, onReady])
+
+  if (error) {
     return (
       <p className="p-6 font-mono text-red-400 bg-black">
         Failed to load events: {error.message}
       </p>
     )
+  }
 
-  if (!data)
-    return <p className="p-6 font-mono text-[#91A878] bg-black">Loading…</p>
+  if (!data) {
+    return (
+      <p className="p-6 font-mono text-[#91A878] bg-black">
+        Loading…
+      </p>
+    )
+  }
 
   const BORDER = 'border border-[#91A878]'
   const CELL_BASE =
@@ -49,7 +67,7 @@ export default function Upcoming() {
 
   return (
     <div className="flex items-center justify-center h-full w-full bg-black/90 px-4 md:px-8">
-      <table className="table-fixed border-collapse w-full shadow-lg">
+      <table className="table-fixed border-collapse w-full shadow-lg bg-[#1E1E1E]">
         <thead>
           <tr>
             <th colSpan={3} className={HEADER_CELL}>
@@ -60,11 +78,22 @@ export default function Upcoming() {
         <tbody>
           {data.map((ev, i) => (
             <tr key={i}>
-              <td className={`${CELL_BASE} font-bold text-lg`}>{ev.Titel}</td>
-              <td className={CELL_BASE}>
-                <p><strong>Dates:</strong> {ev.Startdatum} – {ev.Slutdatum}</p>
-                <p><strong>Place:</strong> {ev.Plats}</p>
+              {/* Title */}
+              <td className={`${CELL_BASE} font-bold text-lg`}>
+                {ev.Titel}
               </td>
+
+              {/* Dates & Place */}
+              <td className={CELL_BASE}>
+                <p>
+                  <strong>Dates:</strong> {ev.Startdatum} – {ev.Slutdatum}
+                </p>
+                <p>
+                  <strong>Place:</strong> {ev.Plats}
+                </p>
+              </td>
+
+              {/* Event Link */}
               <td className={CELL_BASE}>
                 {ev['Länk till event'] ? (
                   <a

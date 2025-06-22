@@ -54,7 +54,7 @@ export default function Navbar() {
         {/* Mobile layout */}
         <div className="flex flex-col items-center justify-center md:hidden border-b border-[#91A878] bg-[#1E1E1E]">
           {/* Logo */}
-          <div className="w-full bg-[#C99C8B] flex items-center justify-center py-4 border-b border-[#91A878]">
+          <div className="w-full bg-[#c98bb6]/50 flex items-center justify-center py-4 border-b border-[#91A878]">
             <Link href="/" aria-label="PLX Home">
               <Image
                 src="/recordshuvud_white.webp"
