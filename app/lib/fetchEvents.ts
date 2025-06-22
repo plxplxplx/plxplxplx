@@ -1,27 +1,31 @@
 import Papa from 'papaparse'
 import { EventRow } from '../types/event'
 
-function isEventRow(obj: any): obj is EventRow {
+function isEventRow(obj: unknown): obj is EventRow {
+  if (typeof obj !== 'object' || obj === null) return false
+  const row = obj as Record<string, unknown>
+
   return (
-    typeof obj.Titel === 'string' &&
-    typeof obj.Kategori === 'string' &&
-    typeof obj.Plats === 'string' &&
-    typeof obj.Startdatum === 'string' &&
-    (typeof obj.Beskrivning === 'string' || obj.Beskrivning === undefined) &&
-    (typeof obj.Medverkande === 'string' || obj.Medverkande === undefined) &&
-    (typeof obj['Länk alla bilder'] === 'string' || obj['Länk alla bilder'] === undefined) &&
-    (typeof obj['Länk utvalda bilder'] === 'string' || obj['Länk utvalda bilder'] === undefined) &&
-    (typeof obj['Länk till event'] === 'string' || obj['Länk till event'] === undefined)
+    typeof row.Titel === 'string' &&
+    typeof row.Kategori === 'string' &&
+    typeof row.Plats === 'string' &&
+    typeof row.Startdatum === 'string' &&
+    (typeof row.Beskrivning === 'string' || row.Beskrivning === undefined) &&
+    (typeof row.Medverkande === 'string' || row.Medverkande === undefined) &&
+    (typeof row['Länk alla bilder'] === 'string' || row['Länk alla bilder'] === undefined) &&
+    (typeof row['Länk utvalda bilder'] === 'string' || row['Länk utvalda bilder'] === undefined) &&
+    (typeof row['Länk till event'] === 'string' || row['Länk till event'] === undefined)
   )
 }
 
 export async function fetchEvents(): Promise<EventRow[]> {
   const csvUrl = process.env.SHEET_CSV_URL!
-  const res = await fetch(csvUrl, { cache: 'no-store' }) // ensure fresh data
+  const res = await fetch(csvUrl, { cache: 'no-store' }) // Always fetch fresh data
   if (!res.ok) throw new Error(`Failed to fetch sheet: ${res.status}`)
+
   const text = await res.text()
 
-  const parsed = Papa.parse(text, {
+  const parsed = Papa.parse<unknown>(text, {
     header: true,
     dynamicTyping: false,
     skipEmptyLines: true,
@@ -32,9 +36,8 @@ export async function fetchEvents(): Promise<EventRow[]> {
     throw new Error('CSV parse error')
   }
 
-  const rows = parsed.data as unknown[]
-
-  const validated = rows.filter(isEventRow)
+  const rows = parsed.data
+  const validated: EventRow[] = rows.filter(isEventRow)
 
   if (validated.length !== rows.length) {
     console.warn(`Some rows were skipped due to invalid format. Valid: ${validated.length}, Total: ${rows.length}`)
