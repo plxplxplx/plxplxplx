@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -78,7 +78,7 @@ export default function SheetTable({ data }: Props) {
           <>
             {loading ? (
               <div className="flex items-center justify-center h-32 text-[#EDEDED]">
-                <div className={`h-8 w-8 animate-spin border-4 ${BORDER} border-t-transparent`} />
+                <div className="w-6 h-6 border-2 border-[#FDFD96] border-t-transparent rounded-full animate-spin" />
                 <span className="ml-2">Laddar bilder…</span>
               </div>
             ) : images.length === 0 ? (
@@ -93,7 +93,7 @@ export default function SheetTable({ data }: Props) {
                   >
                     {loadingImg[`${idx}-${img.id}`] && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                        <div className={`h-6 w-6 animate-spin border-4 ${BORDER} border-t-transparent`} />
+                        <div className="w-6 h-6 border-2 border-[#FDFD96] border-t-transparent rounded-full animate-spin" />
                       </div>
                     )}
                     <Image
