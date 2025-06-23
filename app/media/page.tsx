@@ -7,7 +7,6 @@ export default async function ArticlesPage() {
 
   return (
     <main className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Artiklar</h1>
       <ArticleTable articles={articles} />
     </main>
   )
