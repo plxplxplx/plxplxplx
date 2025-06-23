@@ -67,7 +67,7 @@ export default function Upcoming({ onReady, onClose }: Props) {
         )}
 
         <h2 className="text-center text-[#FDFD96] text-xl sm:text-2xl font-bold font-mono border-b border-[#91A878] pb-2">
-          Upcoming Events
+          Kommande event
         </h2>
 
         {data.map((ev, i) => (

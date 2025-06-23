@@ -33,7 +33,7 @@ export default function Navbar() {
   const CELL_CONTENT = `flex items-center justify-center w-full h-full`;
 
   const isActive = (href: string) =>
-    path === href ? 'text-black font-bold underline' : 'hover:underline';
+    path === href ? 'underline font-bold' : 'hover:underline';
 
   const externalLink = (label: string, href: string) => (
     <a
@@ -92,24 +92,24 @@ export default function Navbar() {
 
           {/* Left group */}
           <div className="flex w-full">
-            <div className={`${CELL} flex-[1.5] bg-[#91A878]`}>
+            <div className={`${CELL} flex-[1.5] bg-[#FDFD96]`}>
               <Link href="/about" className={CELL_CONTENT}>
-                <span className="text-[#282828] text-sm font-semibold">
-                  <span className={isActive('/about')}>About</span>
+                <span className="text-black text-base font-semibold">
+                  <span className={isActive('/about')}>Om PLX</span>
                 </span>
               </Link>
             </div>
-            <div className={`${CELL} flex-[1.5] bg-[#F6BBA8]`}>
+            <div className={`${CELL} flex-[1.5] bg-[#FDFD96]`}>
               <Link href="/media" className={CELL_CONTENT}>
-                <span className="text-[#282828] text-sm font-semibold">
+                <span className="text-black text-base font-semibold">
                   <span className={isActive('/media')}>Media</span>
                 </span>
               </Link>
             </div>
-            <div className={`${CELL} flex-[1.5] bg-[#C99C8B]`}>
+            <div className={`${CELL} flex-[1.5] bg-[#FDFD96]`}>
               <Link href="/event" className={CELL_CONTENT}>
-                <span className="text-[#282828] text-sm font-semibold">
-                  <span className={isActive('/event')}>Archive</span>
+                <span className="text-black text-base font-semibold">
+                  <span className={isActive('/event')}>Arkiv</span>
                 </span>
               </Link>
             </div>
@@ -136,24 +136,24 @@ export default function Navbar() {
           >
             <tbody>
               <tr>
-                <td className={`${CELL} w-[14%] bg-[#91A878] hover:bg-[#91A878]`}>
+                <td className={`${CELL} w-[14%] bg-[#FDFD96] hover:bg-[#FDFD96]`}>
                   <Link href="/about" className={CELL_CONTENT}>
-                    <span className="text-[#282828] text-xl font-semibold">
-                      <span className={isActive('/about')}>About</span>
+                    <span className="text-black text-xl font-semibold">
+                      <span className={isActive('/about')}>Om PLX</span>
                     </span>
                   </Link>
                 </td>
-                <td className={`${CELL} w-[14%] bg-[#F6BBA8] hover:bg-[#F6BBA8]`}>
+                <td className={`${CELL} w-[14%] bg-[#FDFD96] hover:bg-[#FDFD96]`}>
                   <Link href="/media" className={CELL_CONTENT}>
-                    <span className="text-[#282828] text-xl font-semibold">
+                    <span className="text-black text-xl font-semibold">
                       <span className={isActive('/media')}>Media</span>
                     </span>
                   </Link>
                 </td>
-                <td className={`${CELL} w-[14%] bg-[#C99C8B] hover:bg-[#C99C8B]`}>
+                <td className={`${CELL} w-[14%] bg-[#FDFD96] hover:bg-[#FDFD96]`}>
                   <Link href="/event" className={CELL_CONTENT}>
-                    <span className="text-[#282828] text-xl font-semibold">
-                      <span className={isActive('/event')}>Archive</span>
+                    <span className="text-black text-xl font-semibold">
+                      <span className={isActive('/event')}>Arkiv</span>
                     </span>
                   </Link>
                 </td>
