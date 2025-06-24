@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 // Enhanced metadata with SEO and social tags
 export const metadata: Metadata = {
-  title: 'PLX Sociaty',
+  title: 'The PLX Society',
   description:
     'PLX is a Malmö-based art and music collective creating immersive cultural experiences—from legendary festivals to experimental art shows.',
   keywords: [

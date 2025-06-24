@@ -5,22 +5,22 @@ export default function AboutPage() {
     <div className="px-4 sm:px-8">
       <section className="max-w-screen-md mx-auto py-16 my-8 font-mono text-[#FDFD96] bg-[#1E1E1E]/90 space-y-8 border border-[#91A878] px-6 sm:px-10">
         <p className="text-lg leading-relaxed text-[#EDEDED]">
-          PLX is a Malmö-based art and music collective dedicated to creating
-          immersive cultural experiences. From our legendary&nbsp;
-          <strong className="text-[#FDFD96]">Tjärö festival</strong> to
-          experimental media labs and live-action role-playing events,
-          we blur the lines between artist and audience, stage and landscape.
+          PLX är ett Malmöbaserat konst- och musik-kollektiv som skapar
+          immersiva kulturupplevelser. Från legendariska&nbsp;
+          <strong className="text-[#FDFD96]">Tjäröfestival</strong> till
+          konstutställningar, eget skivbolag och experimentella projekt,
+          suddar vi ut gränserna mellan konstnär och publik, scen och natur.
         </p>
 
         <p className="text-lg leading-relaxed text-[#EDEDED]">
-          Founded in 2006, PLX operates as a non-profit
-          <span className="italic"> kulturförening </span> supported by a vibrant
-          network of volunteers, makers and dreamers. We believe in openness,
-          creative risk-taking and bringing people together in unusual places.
+          PLX grundades 2006 och drivs som en ideell
+          <span className="italic"> kulturförening </span> med stöd av ett levande
+          nätverk av volontäreroch kreatörer. Vi tror på öppenhet,
+          kreativt risktagande och att föra människor samman på oväntade platser.
         </p>
 
         <p className="text-lg leading-relaxed text-[#EDEDED]">
-          Want to collaborate, volunteer or any other query? Drop us a message at&nbsp;
+          Vill du samarbeta, volontära eller har någon annan fråga? Hör gärna av dig till&nbsp;
           <a
             href="mailto:art@plxplxplx.com"
             className="text-[#FDFD96] underline hover:opacity-80"
