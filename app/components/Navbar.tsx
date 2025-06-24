@@ -124,7 +124,7 @@ export default function Navbar() {
               {externalLink('PLX Records', 'https://www.plxrecords.com/')}
             </div>
             <div className={`${CELL} flex-1 bg-[#1E1E1E]`}>
-              {externalLink('PLX LARP', 'https://www.plxplxplx.live/')}
+              {externalLink('PLX Lajv', 'https://www.plxplxplx.live/')}
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function Navbar() {
                   {externalLink('PLX Records', 'https://www.plxrecords.com/')}
                 </td>
                 <td className={`${CELL} w-[10%] bg-[#1E1E1E]`}>
-                  {externalLink('PLX LARP', 'https://www.plxplxplx.live/')}
+                  {externalLink('PLX Lajv', 'https://www.plxplxplx.live/')}
                 </td>
 
                 <td className={CELL}>
