@@ -1,7 +1,7 @@
 'use client'
 
 import p5 from 'p5'
-import P5Wrapper from './P5Wrapper'
+import P5Wrapper from './P5Wrapper' // Assuming P5Wrapper is in the same directory
 
 const IMAGE_PATH_DESKTOP = '/Image.png'
 const IMAGE_PATH_MOBILE = '/ImageSmall.png'
@@ -10,15 +10,30 @@ const BreathingImageSketch = (p: p5) => {
   let img: p5.Image | null = null
   let waveBuffer: p5.Graphics
   let isSmallImage = false
+  let canvasRenderer: p5.Renderer // ✨ FIX: Variable to hold the canvas
+
+  const getParentSize = () => {
+    // ✨ FIX: Access the canvas element via the renderer's .elt property
+    const parent = (canvasRenderer?.elt.parentElement)
+    return parent ? [parent.clientWidth, parent.clientHeight] : [p.windowWidth, p.windowHeight]
+  }
+
+  const setupCanvasAndBuffer = () => {
+    const [w, h] = getParentSize()
+    p.resizeCanvas(w, h)
+    waveBuffer = p.createGraphics(w, h)
+    waveBuffer.imageMode(p.CENTER)
+    waveBuffer.smooth()
+  }
 
   p.setup = () => {
-    p.createCanvas(p.windowWidth, p.windowHeight)
+    const [w, h] = getParentSize()
+    // ✨ FIX: Store the canvas renderer when creating it
+    canvasRenderer = p.createCanvas(w, h)
     p.imageMode(p.CENTER)
     p.smooth()
 
-    waveBuffer = p.createGraphics(p.windowWidth, p.windowHeight)
-    waveBuffer.imageMode(p.CENTER)
-    waveBuffer.smooth()
+    setupCanvasAndBuffer()
 
     isSmallImage = p.windowWidth < 768
     const path = isSmallImage ? IMAGE_PATH_MOBILE : IMAGE_PATH_DESKTOP
@@ -36,7 +51,6 @@ const BreathingImageSketch = (p: p5) => {
     const scaleAmplitude = isSmallImage ? 0.01 : 0.02
     const scaleFactor = scaleBase + Math.sin(t) * scaleAmplitude
 
-    // Draw scaled image to buffer with black background
     waveBuffer.push()
     waveBuffer.clear()
     waveBuffer.background(0)
@@ -55,6 +69,8 @@ const BreathingImageSketch = (p: p5) => {
       const wave = Math.sin(t + i * 0.2) * 5
       const sw = Math.min(sliceW + 1, waveBuffer.width - x)
 
+      if (sw <= 0) continue;
+
       p.copy(
         waveBuffer,
         x, 0,
@@ -66,21 +82,21 @@ const BreathingImageSketch = (p: p5) => {
   }
 
   p.windowResized = () => {
-    p.resizeCanvas(p.windowWidth, p.windowHeight)
-    waveBuffer = p.createGraphics(p.windowWidth, p.windowHeight)
-    waveBuffer.imageMode(p.CENTER)
-    waveBuffer.smooth()
-
-    // Reload image for correct size
+    setupCanvasAndBuffer()
+    const wasSmall = isSmallImage
     isSmallImage = p.windowWidth < 768
-    const path = isSmallImage ? IMAGE_PATH_MOBILE : IMAGE_PATH_DESKTOP
-    p.loadImage(path, (loadedImage) => {
-      img = loadedImage
-    })
+
+    if (wasSmall !== isSmallImage) {
+      const path = isSmallImage ? IMAGE_PATH_MOBILE : IMAGE_PATH_DESKTOP
+      p.loadImage(path, (loadedImage) => {
+        img = loadedImage
+      })
+    }
   }
 }
 
-export default function BreathingImageCanvas() {
+// This is the actual component being exported and used in HomePage
+export default function ImageSketch() {
   return (
     <P5Wrapper
       sketch={BreathingImageSketch}
