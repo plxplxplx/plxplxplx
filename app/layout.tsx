@@ -19,13 +19,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'The PLX Society',
   description:
-    'PLX is a Malmö-based art and music collective creating immersive cultural experiences—from legendary festivals to experimental art shows.',
+    'PLX is an art and music collective creating immersive cultural experiences—from legendary festivals to experimental art shows.',
   keywords: [
     'PLX',
     'PLX Tjärö',
     'art collective',
     'music collective',
     'Malmö art',
+    'Stockholm art',
     'immersive culture',
     'Sweden festival',
     'live-action roleplay',
