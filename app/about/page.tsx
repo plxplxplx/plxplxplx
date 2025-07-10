@@ -5,7 +5,7 @@ export default function AboutPage() {
     <div className="px-4 sm:px-8">
       <section className="max-w-screen-md mx-auto py-16 my-8 font-mono text-[#FDFD96] bg-[#1E1E1E]/90 space-y-8 border border-[#91A878] px-6 sm:px-10">
         <p className="text-lg leading-relaxed text-[#EDEDED]">
-          PLX är ett Malmöbaserat konst- och musik-kollektiv som skapar
+          PLX är ett konst- och musik-kollektiv som skapar
           immersiva kulturupplevelser. Från legendariska&nbsp;
           <strong className="text-[#FDFD96]">Tjäröfestival</strong> till
           konstutställningar, eget skivbolag och experimentella projekt,
