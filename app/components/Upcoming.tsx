@@ -17,6 +17,7 @@ export interface UpcomingRow {
 type Props = {
   onReady?: () => void
   onClose?: () => void
+  onEmpty?: () => void        // ⬅️ NEW
 }
 
 const fetcher = async (url: string): Promise<UpcomingRow[]> => {
@@ -29,12 +30,17 @@ const fetcher = async (url: string): Promise<UpcomingRow[]> => {
   return json
 }
 
-export default function Upcoming({ onReady, onClose }: Props) {
+export default function Upcoming({ onReady, onClose, onEmpty }: Props) {
   const { data, error } = useSWR<UpcomingRow[]>('/api/upcoming', fetcher)
 
   useEffect(() => {
-    if (data && onReady) onReady()
-  }, [data, onReady])
+    if (!data) return
+    if (data.length === 0) {
+      onEmpty?.()               // ⬅️ tell parent to hide popup
+    } else {
+      onReady?.()
+    }
+  }, [data, onEmpty, onReady])
 
   if (error) {
     return (
@@ -43,6 +49,9 @@ export default function Upcoming({ onReady, onClose }: Props) {
       </p>
     )
   }
+
+  // If empty, render nothing (prevents a blank popup during the close transition)
+  if (data && data.length === 0) return null
 
   if (!data) {
     return (
@@ -55,7 +64,6 @@ export default function Upcoming({ onReady, onClose }: Props) {
   return (
     <div className="flex flex-col items-center justify-center w-full h-full px-2 sm:px-4">
       <div className="relative w-full max-w-screen-sm bg-[#1E1E1E]/80 rounded-lg shadow-lg overflow-hidden p-3 space-y-3">
-        {/* Close button in top-right corner */}
         {onClose && (
           <button
             onClick={onClose}
@@ -76,7 +84,6 @@ export default function Upcoming({ onReady, onClose }: Props) {
             className="rounded-md border border-[#91A878] p-3 font-mono text-sm text-[#EDEDED] bg-[#1E1E1E]/90 space-y-1"
           >
             <div className="text-base sm:text-lg font-bold mb-1">{ev.Titel}</div>
-
             <div className="flex justify-between items-center text-xs sm:text-sm text-[#CCCCCC]">
               <div>
                 {ev.Startdatum} – {ev.Slutdatum} · {ev.Plats}
