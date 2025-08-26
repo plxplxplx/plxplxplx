@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     'PLX is an art and music collective creating immersive cultural experiences—from legendary festivals to experimental art shows.',
   keywords: [
     'PLX',
+    'PLX Festival',
     'PLX Tjärö',
     'art collective',
     'music collective',
