@@ -29,18 +29,6 @@ export default function HomePage() {
             </div>
           </div>
         )}
-
-        {/* Toggle button (only when Upcoming hidden) */}
-        {!showUpcoming && (
-          <button
-            onClick={() => setShowUpcoming(true)}
-            className="absolute top-4 left-4 z-20
-                       px-4 py-2 bg-[#91A878] text-black font-bold rounded
-                       hover:bg-[#A4C57C] transition"
-          >
-            Visa&nbsp;Evenemang
-          </button>
-        )}
       </div>
 
       {/* ────────── Bottom (Mobile) / Right (Desktop): GIF ─────────── */}
