@@ -241,7 +241,7 @@ function CountdownCell({ value, label }: { value: number; label: string }) {
   )
 }
 
-export default function ArtsoppeseglingPage() {
+export default function TvPage() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null)
 
   useEffect(() => {

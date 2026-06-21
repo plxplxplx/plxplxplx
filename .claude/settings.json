@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(npx tsc --noEmit -p tsconfig.json)"
+      "PowerShell(npx tsc --noEmit -p tsconfig.json)",
+      "PowerShell(git -C \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\" mv app/artsoppesegling app/tv)",
+      "PowerShell(if \\($?\\) { \"flyttad\" })"
     ]
   }
 }
