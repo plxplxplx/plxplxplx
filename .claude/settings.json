@@ -3,7 +3,22 @@
     "allow": [
       "PowerShell(npx tsc --noEmit -p tsconfig.json)",
       "PowerShell(git -C \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\" mv app/artsoppesegling app/tv)",
-      "PowerShell(if \\($?\\) { \"flyttad\" })"
+      "PowerShell(if \\($?\\) { \"flyttad\" })",
+      "PowerShell(npm install 2>&1)",
+      "PowerShell(git -C \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\" status --short)",
+      "PowerShell(\"`n--- package.json deps ---\")",
+      "PowerShell(npm view react dist-tags --json)",
+      "PowerShell(npm view react-dom version)",
+      "PowerShell(npm view react-server-dom-webpack dist-tags --json)",
+      "PowerShell(\"=== react dist-tags ===\")",
+      "PowerShell(\"`n=== react-dom latest 19.x ===\")",
+      "PowerShell(\"`n=== react-server-dom-webpack dist-tags ===\")",
+      "PowerShell(npm view next@16.2.9 peerDependencies engines --json)",
+      "PowerShell(node -v)",
+      "PowerShell(\"=== next@16.2.9 peer/engines ===\")",
+      "PowerShell(\"`n=== next.config ===\")",
+      "PowerShell(\"`n=== node version ===\")",
+      "PowerShell(npm run build 2>&1)"
     ]
   }
 }
