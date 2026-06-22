@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { FaRegCalendar, FaTv, FaSailboat, FaPlay } from 'react-icons/fa6'
+import {
+  FaRegCalendar,
+  FaTv,
+  FaSailboat,
+  FaPlay,
+  FaLocationDot,
+} from 'react-icons/fa6'
 
 // Sändningen startar fredag 17 juli 2026, 09.30 svensk tid (CEST = UTC+2)
 const BROADCAST_START = new Date('2026-07-17T09:30:00+02:00')
@@ -68,7 +74,7 @@ export default function TvPage() {
           <div className="relative">
             <Image
               src="/soppa.png"
-              alt="Ärtsopp-TV"
+              alt="Ärtsopps-TV"
               width={1618}
               height={972}
               priority
@@ -84,7 +90,7 @@ export default function TvPage() {
 
             {/* Liten kanal-logga */}
             <div className="absolute top-3 left-3 z-10 bg-[#1E1E1E] text-[#FDFD96] text-[10px] sm:text-xs font-bold uppercase tracking-widest px-2 py-1 border border-[#91A878]">
-              Ärtsopp-TV
+              Ärtsopps-TV
             </div>
           </div>
 
@@ -128,13 +134,18 @@ export default function TvPage() {
             Sedan sjuttonhundratalet har blekingeekan skurit vattnet i Hanöbukten.
             Sedan 1983 har soppa, punsch och tävling samlat ekorna i Näsviken varje
             sommar. I år kan du för första gången följa alltihop hemifrån, när{' '}
-            <strong className="text-[#FDFD96]">Ärtsopp-TV</strong> sänder
+            <strong className="text-[#FDFD96]">Ärtsopps-TV</strong> sänder
             Ärtsoppeseglingen live — en produktion av{' '}
             <strong className="text-[#FDFD96]">PLX</strong>.
           </p>
 
           <p className="text-lg leading-relaxed">
             Förvänta dig segling, reportage, studio och framträdanden.
+          </p>
+
+          <p className="text-lg leading-relaxed">
+            Ärtsopps-TV kan upplevas live från{' '}
+            <strong className="text-[#FDFD96]">Villa Utsikten</strong> i Karlshamn.
           </p>
 
           <div className="border-t border-[#91A878]/40 pt-6 space-y-3 text-base">
@@ -150,6 +161,13 @@ export default function TvPage() {
               <span>
                 <span className="text-[#91A878] font-semibold">Var:</span> Här på
                 sidan — kostnadsfritt och online
+              </span>
+            </p>
+            <p className="flex items-start gap-3">
+              <FaLocationDot aria-hidden className="mt-1 shrink-0 text-[#91A878]" />
+              <span>
+                <span className="text-[#91A878] font-semibold">På plats:</span>{' '}
+                Upplev sändningen live från Villa Utsikten i Karlshamn
               </span>
             </p>
             <p className="flex items-start gap-3">

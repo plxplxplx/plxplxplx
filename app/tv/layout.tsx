@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const title = 'Ärtsopp-TV – Ärtsoppeseglingen live'
+const title = 'Ärtsopps-TV – Ärtsoppeseglingen live'
 const description =
   'Följ Ärtsoppeseglingen live från Näsviken fredag 17 juli kl 09.30 — segling, reportage, studio och framträdanden. En produktion av PLX, kostnadsfritt online.'
 
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
         url: '/og-tv.jpg',
         width: 1200,
         height: 630,
-        alt: 'Ärtsopp-TV',
+        alt: 'Ärtsopps-TV',
       },
     ],
     type: 'website',
