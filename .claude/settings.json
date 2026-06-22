@@ -18,7 +18,9 @@
       "PowerShell(\"=== next@16.2.9 peer/engines ===\")",
       "PowerShell(\"`n=== next.config ===\")",
       "PowerShell(\"`n=== node version ===\")",
-      "PowerShell(npm run build 2>&1)"
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(if \\(Test-Path \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"\\) { $f = Get-Item \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"; \"soppa.png finns - $\\([math]::Round\\($f.Length/1KB\\)\\) KB\" } else { \"SAKNAS: public/soppa.png\" })",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))"
     ]
   }
 }
