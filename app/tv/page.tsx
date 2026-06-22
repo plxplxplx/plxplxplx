@@ -181,6 +181,42 @@ export default function TvPage() {
 
           <p className="text-sm text-[#EDEDED]/70">Sätt alarmet redan nu.</p>
         </div>
+
+        {/* ─────────── Stöd / partners ─────────── */}
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-3 pt-2 text-sm text-[#EDEDED]/80">
+          <span>Med stöd av</span>
+          <a
+            href="https://www.konstframjandet.se"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Konstfrämjandet"
+            className="inline-flex items-center rounded bg-white px-2.5 py-1.5 transition-opacity hover:opacity-80"
+          >
+            <Image
+              src="/konstframjandet.png"
+              alt="Konstfrämjandet"
+              width={668}
+              height={454}
+              className="h-9 w-auto"
+            />
+          </a>
+          <span>och</span>
+          <a
+            href="https://www.storegate.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Storegate"
+            className="inline-flex items-center rounded bg-white px-2.5 py-1.5 transition-opacity hover:opacity-80"
+          >
+            <Image
+              src="/storegate.png"
+              alt="Storegate"
+              width={940}
+              height={531}
+              className="h-9 w-auto"
+            />
+          </a>
+        </div>
       </section>
 
       <style jsx>{`

@@ -21,7 +21,9 @@
       "PowerShell(npm run build 2>&1)",
       "PowerShell(if \\(Test-Path \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"\\) { $f = Get-Item \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"; \"soppa.png finns - $\\([math]::Round\\($f.Length/1KB\\)\\) KB\" } else { \"SAKNAS: public/soppa.png\" })",
       "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))",
-      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"\\); \"soppa.png: $\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))"
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\soppa.png\"\\); \"soppa.png: $\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; foreach \\($n in 'konstframjandet','storegate'\\) { $p = \"C:\\\\Users\\\\alexa\\\\Documents\\\\Development\\\\NEXT\\\\PLXPLXPLX\\\\plxplxplx.com\\\\public\\\\$n.png\"; $i = [System.Drawing.Image]::FromFile\\($p\\); \"$n.png: $\\($i.Width\\) x $\\($i.Height\\)\"; $i.Dispose\\(\\) })",
+      "PowerShell(if \\($?\\) { \"type-check ok\" })"
     ]
   }
 }
