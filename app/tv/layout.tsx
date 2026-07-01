@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 const title = 'Ärtsopps-TV – Ärtsoppeseglingen live'
 const description =
-  'Följ Ärtsoppeseglingen live från Näsviken fredag 17 juli kl 09.30 — segling, reportage, studio och framträdanden. En produktion av PLX, kostnadsfritt online.'
+  'Följ Ärtsoppeseglingen live från Näsviken fredag 17 juli kl 10.30 — segling, reportage, studio och framträdanden. En produktion av PLX, kostnadsfritt online.'
 
 export const metadata: Metadata = {
   title,

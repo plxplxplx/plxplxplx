@@ -10,8 +10,8 @@ import {
   FaLocationDot,
 } from 'react-icons/fa6'
 
-// Sändningen startar fredag 17 juli 2026, 09.30 svensk tid (CEST = UTC+2)
-const BROADCAST_START = new Date('2026-07-17T09:30:00+02:00')
+// Sändningen startar fredag 17 juli 2026, 10.30 svensk tid (CEST = UTC+2)
+const BROADCAST_START = new Date('2026-07-17T10:30:00+02:00')
 
 type TimeLeft = {
   days: number
@@ -35,6 +35,28 @@ function getTimeLeft(): TimeLeft {
     done: false,
   }
 }
+
+type ScheduleItem = { time: string; text: string; note?: string }
+type ScheduleBlock = { time: string; title: string; items?: ScheduleItem[] }
+
+const SCHEDULE: ScheduleBlock[] = [
+  { time: '10:30–11:00', title: 'Uppladdning – studio Näsviken' },
+  {
+    time: '11:00–12:30',
+    title: 'Start segling',
+    items: [
+      { time: '11:00', text: 'Stora dacron', note: 'dacron = polyestersegel' },
+      { time: '11:05', text: 'Lilla dacron' },
+      { time: '11:10', text: 'Bomullsklassen' },
+      { time: '12:00–12:30', text: 'Målgång' },
+    ],
+  },
+  { time: '12:30–13:30', title: 'Lunch för besättningar' },
+  { time: '13:30–14:00', title: 'Prisutdelning' },
+  { time: '14:00–15:00', title: 'Studion' },
+  { time: '16:00–20:00', title: 'Paus' },
+  { time: '20:00–21:00', title: 'Sändning från Villa Utsikten' },
+]
 
 function CountdownCell({ value, label }: { value: number; label: string }) {
   return (
@@ -64,7 +86,7 @@ export default function TvPage() {
         {/* ─────────── Rubrik ─────────── */}
         <header className="text-center">
           <p className="text-sm sm:text-lg text-[#EDEDED]">
-            Live — fredag 17 juli, sändningen startar 09.30
+            Live — fredag 17 juli, sändningen startar 10.30
           </p>
         </header>
 
@@ -153,7 +175,7 @@ export default function TvPage() {
               <FaRegCalendar aria-hidden className="mt-1 shrink-0 text-[#91A878]" />
               <span>
                 <span className="text-[#91A878] font-semibold">När:</span> Fredag
-                17 juli, kl 09.30
+                17 juli, kl 10.30
               </span>
             </p>
             <p className="flex items-start gap-3">
@@ -180,6 +202,49 @@ export default function TvPage() {
           </div>
 
           <p className="text-sm text-[#EDEDED]/70">Sätt alarmet redan nu.</p>
+        </div>
+
+        {/* ─────────── Program ─────────── */}
+        <div className="border border-[#91A878] bg-[#1E1E1E]/90 px-6 sm:px-10 py-8 text-[#EDEDED]">
+          <h2 className="mb-6 text-sm uppercase tracking-widest text-[#91A878]">
+            Program
+          </h2>
+          <ul className="space-y-4">
+            {SCHEDULE.map((block) => (
+              <li key={block.time}>
+                <div className="flex gap-3 sm:gap-4">
+                  <span className="w-24 sm:w-28 shrink-0 tabular-nums text-[#FDFD96]">
+                    {block.time}
+                  </span>
+                  <span className="flex-1 font-semibold">{block.title}</span>
+                </div>
+
+                {block.items && (
+                  <ul className="mt-2 space-y-1 border-l border-[#91A878]/40 pl-3 sm:pl-4">
+                    {block.items.map((item) => (
+                      <li
+                        key={item.time}
+                        className="flex gap-3 sm:gap-4 text-sm text-[#EDEDED]/80"
+                      >
+                        <span className="w-24 sm:w-28 shrink-0 tabular-nums text-[#91A878]">
+                          {item.time}
+                        </span>
+                        <span className="flex-1">
+                          {item.text}
+                          {item.note && (
+                            <span className="text-[#EDEDED]/50">
+                              {' '}
+                              ({item.note})
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* ─────────── Stöd / partners ─────────── */}
