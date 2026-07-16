@@ -101,9 +101,10 @@ function CountdownCell({ value, label }: { value: number; label: string }) {
   )
 }
 
-export default function TvPage() {
+export default function TvTestPage() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null)
-  const [forceLive, setForceLive] = useState(false)
+  // Testsida: embedden startar påslagen
+  const [forceLive, setForceLive] = useState(true)
   const [videoPad, setVideoPad] = useState('56.25%') // 16:9 tills spelaren justerar
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
@@ -111,13 +112,6 @@ export default function TvPage() {
     setTimeLeft(getTimeLeft())
     const id = setInterval(() => setTimeLeft(getTimeLeft()), 1000)
     return () => clearInterval(id)
-  }, [])
-
-  // ?live=1 tvingar fram embedden (för test innan sändning)
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('live') === '1') {
-      setForceLive(true)
-    }
   }, [])
 
   // Spelaren skickar sitt bildförhållande via postMessage
@@ -143,6 +137,20 @@ export default function TvPage() {
   return (
     <div className="px-4 sm:px-8">
       <section className="max-w-screen-md mx-auto py-12 my-8 font-mono space-y-10">
+        {/* ─────────── Testkontroll ─────────── */}
+        <div className="flex items-center justify-between gap-3 border border-[#FDFD96]/50 bg-[#FDFD96]/10 px-3 py-2 text-xs text-[#FDFD96]">
+          <span className="font-bold uppercase tracking-widest">
+            Testsida — /tv-test
+          </span>
+          <button
+            type="button"
+            onClick={() => setForceLive((v) => !v)}
+            className="shrink-0 rounded border border-[#FDFD96]/60 px-3 py-1 font-semibold uppercase tracking-wide transition-colors hover:bg-[#FDFD96]/20"
+          >
+            {isLive ? 'Visa platshållare' : 'Starta embed'}
+          </button>
+        </div>
+
         {/* ─────────── Rubrik ─────────── */}
         <header className="text-center">
           <p className="text-sm sm:text-lg text-[#EDEDED]">
