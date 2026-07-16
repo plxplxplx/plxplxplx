@@ -206,19 +206,9 @@ export default function TvTestPage() {
           <div className="flex items-center gap-2 bg-[#1E1E1E]/95 border-t border-[#91A878] px-3 sm:px-4 py-2">
             <span className="live-dot shrink-0" />
             {isLive ? (
-              <>
-                <span className="min-w-0 truncate text-[#FDFD96] text-[11px] sm:text-sm font-bold uppercase tracking-wide sm:tracking-widest">
-                  Sänder live nu
-                </span>
-                <a
-                  href={LIVE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-auto shrink-0 text-xs text-[#EDEDED]/70 underline hover:text-[#FDFD96]"
-                >
-                  Öppna i ny flik
-                </a>
-              </>
+              <span className="min-w-0 truncate text-[#FDFD96] text-[11px] sm:text-sm font-bold uppercase tracking-wide sm:tracking-widest">
+                Sänder live nu
+              </span>
             ) : (
               <>
                 <span className="min-w-0 truncate text-[#FDFD96] text-[11px] sm:text-sm font-bold uppercase tracking-wide sm:tracking-widest">
@@ -231,6 +221,18 @@ export default function TvTestPage() {
             )}
           </div>
         </div>
+
+        {isLive && (
+          <a
+            href={LIVE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center gap-3 rounded border border-[#91A878] bg-[#FDFD96] px-6 py-4 text-base sm:text-lg font-bold uppercase tracking-widest text-black transition-opacity hover:opacity-90"
+          >
+            <FaPlay aria-hidden className="shrink-0" />
+            Öppna livesändningen i ny flik
+          </a>
+        )}
 
         {/* Strukturdata för sändningen */}
         <script
