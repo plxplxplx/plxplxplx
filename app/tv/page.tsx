@@ -13,8 +13,10 @@ import {
 // Live-sändning (qcnl.tv / screen9)
 const LIVE_URL = 'https://qcnl.tv/p/4twkt8Aq69t88KzOkd-EZg'
 const EMBED_URL = 'https://qcnl.tv/e/RYELeLUJw1H1ptGpTYMmGLbCWJPhPUb6WKPvBGfRoOY'
+const AFTERSAIL_EMBED_URL =
+  'https://qcnl.tv/e/njT2lZdBn20wk0pyxhZqMmJu19XIB3OplifraJd2Jws'
 
-// Strukturdata för sändningen (schema.org VideoObject)
+// Strukturdata för sändningarna (schema.org VideoObject)
 const VIDEO_LD = {
   '@context': 'https://schema.org',
   '@type': 'VideoObject',
@@ -40,6 +42,30 @@ const VIDEO_LD = {
   embedUrl: EMBED_URL,
 }
 
+const VIDEO_LD_AFTERSAIL = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: 'After Sail TV Ärtsopps-TV 2026',
+  description: 'After Sail TV Ärtsopps-TV 2026',
+  thumbnailUrl: [
+    'https://cfcdn.screen9.com/img/s/a/sa1vb-Z7ml_VQp3wgnqjXQ_image/thumb.jpg?v=0',
+    'https://cfcdn.screen9.com/img/s/a/sa1vb-Z7ml_VQp3wgnqjXQ_image/144p.jpg?v=0',
+    'https://cfcdn.screen9.com/img/s/a/sa1vb-Z7ml_VQp3wgnqjXQ_image/240p.jpg?v=0',
+    'https://cfcdn.screen9.com/img/s/a/sa1vb-Z7ml_VQp3wgnqjXQ_image/360p.jpg?v=0',
+    'https://cfcdn.screen9.com/img/s/a/sa1vb-Z7ml_VQp3wgnqjXQ_image/480p.jpg?v=0',
+    'https://cfcdn.screen9.com/img/s/a/sa1vb-Z7ml_VQp3wgnqjXQ_image/720p.jpg?v=0',
+    'https://cfcdn.screen9.com/img/s/a/sa1vb-Z7ml_VQp3wgnqjXQ_image/image.jpg?v=0',
+  ],
+  uploadDate: '2026-07-17T17:00:00Z',
+  publication: {
+    '@type': 'BroadcastEvent',
+    startDate: '2026-07-17T17:00:00',
+    endDate: '2026-07-17T20:00:00',
+    isLiveBroadcast: true,
+  },
+  embedUrl: AFTERSAIL_EMBED_URL,
+}
+
 type ScheduleItem = { time: string; text: string; note?: string }
 type ScheduleBlock = { time: string; title: string; items?: ScheduleItem[] }
 
@@ -62,11 +88,11 @@ const SCHEDULE: ScheduleBlock[] = [
   { time: '20:00–21:00', title: 'Sändning från Villa Utsikten' },
 ]
 
-export default function TvPage() {
-  const [videoPad, setVideoPad] = useState('56.25%') // 16:9 tills spelaren justerar
+// Responsiv qcnl.tv-spelare — justerar bildförhållandet via postMessage
+function LivePlayer({ src, title }: { src: string; title: string }) {
+  const [pad, setPad] = useState('56.25%') // 16:9 tills spelaren justerar
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  // Spelaren skickar sitt bildförhållande via postMessage
   useEffect(() => {
     function onMessage(e: MessageEvent) {
       const iframe = iframeRef.current
@@ -77,13 +103,45 @@ export default function TvPage() {
         e.data.event === 'setAspectRatio' &&
         e.data.data?.ratio
       ) {
-        setVideoPad(`${100 / e.data.data.ratio}%`)
+        setPad(`${100 / e.data.data.ratio}%`)
       }
     }
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
   }, [])
 
+  return (
+    <div className="w-full border border-[#91A878] bg-black overflow-hidden">
+      <div className="relative w-full" style={{ paddingBottom: pad }}>
+        <iframe
+          ref={iframeRef}
+          src={src}
+          title={title}
+          allow="autoplay; fullscreen"
+          allowFullScreen
+          referrerPolicy="no-referrer-when-downgrade"
+          className="absolute inset-0 h-full w-full border-0"
+        />
+      </div>
+    </div>
+  )
+}
+
+function LiveLinkButton({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex w-full items-center justify-center gap-3 rounded border border-[#91A878] bg-[#FDFD96] px-6 py-4 text-base sm:text-lg font-bold uppercase tracking-widest text-black transition-opacity hover:opacity-90"
+    >
+      <FaPlay aria-hidden className="shrink-0" />
+      Öppna livesändningen i ny flik
+    </a>
+  )
+}
+
+export default function TvPage() {
   return (
     <div className="px-4 sm:px-8">
       <section className="max-w-screen-md mx-auto py-12 my-8 font-mono space-y-8">
@@ -94,33 +152,32 @@ export default function TvPage() {
           </p>
         </header>
 
-        {/* ─────────── Livesändning ─────────── */}
-        <div className="w-full border border-[#91A878] bg-black overflow-hidden">
-          <div className="relative w-full" style={{ paddingBottom: videoPad }}>
-            <iframe
-              ref={iframeRef}
-              src={EMBED_URL}
-              title="Ärtsopps-TV"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              className="absolute inset-0 h-full w-full border-0"
-            />
-          </div>
+        {/* ─────────── After Sail TV ─────────── */}
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-widest text-[#91A878]">
+            After Sail TV
+          </p>
+          <LivePlayer
+            src={AFTERSAIL_EMBED_URL}
+            title="After Sail TV Ärtsopps-TV 2026"
+          />
+          <LiveLinkButton href={AFTERSAIL_EMBED_URL} />
         </div>
 
-        {/* Länk till sändningen */}
-        <a
-          href={LIVE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-3 rounded border border-[#91A878] bg-[#FDFD96] px-6 py-4 text-base sm:text-lg font-bold uppercase tracking-widest text-black transition-opacity hover:opacity-90"
-        >
-          <FaPlay aria-hidden className="shrink-0" />
-          Öppna livesändningen i ny flik
-        </a>
+        {/* ─────────── Ärtsopps-TV ─────────── */}
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-widest text-[#91A878]">
+            Ärtsopps-TV
+          </p>
+          <LivePlayer src={EMBED_URL} title="Ärtsopps-TV" />
+          <LiveLinkButton href={LIVE_URL} />
+        </div>
 
-        {/* Strukturdata för sändningen */}
+        {/* Strukturdata för sändningarna */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(VIDEO_LD_AFTERSAIL) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(VIDEO_LD) }}
