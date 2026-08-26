@@ -116,14 +116,17 @@ export default function Navbar() {
           </div>
 
           {/* Right group */}
-          <div className="flex w-full">
-            <div className={`${CELL} flex-1 bg-[#1E1E1E]`}>
+          <div className="grid grid-cols-2 w-full">
+            <div className={`${CELL} bg-[#1E1E1E]`}>
+              {externalLink('PLX Saturnus', 'https://www.saturnuskultur.se/')}
+            </div>
+            <div className={`${CELL} bg-[#1E1E1E]`}>
               {externalLink('PLX Tjärö', 'https://plxtjaro.com/')}
             </div>
-            <div className={`${CELL} flex-1 bg-[#1E1E1E]`}>
+            <div className={`${CELL} bg-[#1E1E1E]`}>
               {externalLink('PLX Records', 'https://www.plxrecords.com/')}
             </div>
-            <div className={`${CELL} flex-1 bg-[#1E1E1E]`}>
+            <div className={`${CELL} bg-[#1E1E1E]`}>
               {externalLink('PLX Lajv', 'https://www.plxplxplx.live/')}
             </div>
           </div>
@@ -170,13 +173,16 @@ export default function Navbar() {
                   </Link>
                 </td>
 
-                <td className={`${CELL} w-[10%] bg-[#1E1E1E]`}>
+                <td className={`${CELL} w-[9%] bg-[#1E1E1E]`}>
+                  {externalLink('PLX Saturnus', 'https://www.saturnuskultur.se/')}
+                </td>
+                <td className={`${CELL} w-[9%] bg-[#1E1E1E]`}>
                   {externalLink('PLX Tjärö', 'https://plxtjaro.com/')}
                 </td>
-                <td className={`${CELL} w-[10%] bg-[#1E1E1E]`}>
+                <td className={`${CELL} w-[9%] bg-[#1E1E1E]`}>
                   {externalLink('PLX Records', 'https://www.plxrecords.com/')}
                 </td>
-                <td className={`${CELL} w-[10%] bg-[#1E1E1E]`}>
+                <td className={`${CELL} w-[9%] bg-[#1E1E1E]`}>
                   {externalLink('PLX Lajv', 'https://www.plxplxplx.live/')}
                 </td>
 
